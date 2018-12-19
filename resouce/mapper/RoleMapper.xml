@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="great.mapper.RoleMapper">
+	<!-- 添加角色 -->
+	<insert id="addRole" parameterType="great.bean.Role">
+		insert into tbRole(roleId,roleName)values(SEQ_tbRole.nextval,#{roleName})
+	</insert>
+	<!-- 查找角色 -->
+	<select id="queryRole" parameterType="great.bean.Role" resultType="great.bean.Role">
+		select roleId,roleName from tbRole
+	</select>
+	<!-- 删除角色 -->
+	<delete id="delRole" parameterType="int">
+		delete from tbRole where roleId = #{roleId}
+	</delete>
+	<update id="updateRoleName" parameterType="great.bean.Role">
+		update tbRole set roleName = #{roleName} where roleId = #{roleId}
+	</update>
+</mapper>
