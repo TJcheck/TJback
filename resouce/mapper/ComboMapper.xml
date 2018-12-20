@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="great.mapper.ComboMapper">
+    <!--创建项目Id -->
+    <select id="createId" resultType="int">
+    select seq_tbCombo.nextval from dual
+    </select>
+	<!-- 添加套餐 -->
+	<insert id="addCombo" parameterType="great.bean.Combo">
+		insert into tbCombo(comboId,companyId,comboCost,comboName) values(#{comboId},#{companyId},#{comboCost},#{comboName})
+	</insert>
+	<!-- 查找项目-->
+	<select id="queryCombo" parameterType="great.bean.Combo" resultType="great.bean.Combo">
+		select comboId,c.companyId,companyName,comboCost,comboName from tbCombo c,tbCompany p
+       where c.companyId=p.companyId
+		    <if test="comboId !=0">
+			and comboId = #{comboId}
+			</if>
+			<if test="comboName!=null and comboName!=''">
+			and comboName like '%${comboName}%'
+			</if>
+	</select>
+	<!-- 删除套餐-->
+	<delete id="delCombo" parameterType="int">
+		delete from tbCombo where comboId=#{comboId}
+	</delete>
+	<!-- 更新套餐 -->
+	<update id="updateCombo" parameterType="great.bean.Combo">
+     update tbCombo set comboName = #{comboName},companyId = #{companyId},comboCost = #{comboCost} where comboId = #{comboId}
+	</update>
+	<!-- 批量添加套餐项目中间表 -->
+	<insert id="addProjects" parameterType="map">
+	insert into tbProjectCombo(comboId,projectId) 
+    select #{comboId},a.* from (
+		<foreach collection="projectIds" index="index" item="projectId" separator="union all">
+			(select #{projectId} from dual)
+		</foreach>
+		)a
+	</insert>
+	<!-- 查询套餐项目中间表 -->
+	<select id="queryProjects" parameterType="great.bean.ProjectCombo" resultType="great.bean.ProjectCombo">
+	select comboId,projectId from tbProjectCombo
+	<where>
+	  <if test="comboId !=0">
+			 comboId = #{comboId}
+	</if>
+	</where>
+	</select>
+	<!-- 删除套餐项目中间表 -->
+	<delete id="delProCombo" parameterType="int">
+	delete from tbProjectCombo where comboId = #{comboId}
+	</delete>
+	</mapper>

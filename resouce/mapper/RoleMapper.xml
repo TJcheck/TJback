@@ -8,11 +8,17 @@
 	<!-- 查找角色 -->
 	<select id="queryRole" parameterType="great.bean.Role" resultType="great.bean.Role">
 		select roleId,roleName from tbRole
+		<where>
+			<if test="roleName!=null">
+				and roleName like '%${roleName}%'
+			</if>
+		</where>
 	</select>
 	<!-- 删除角色 -->
 	<delete id="delRole" parameterType="int">
 		delete from tbRole where roleId = #{roleId}
 	</delete>
+	<!-- 更新角色名字 -->
 	<update id="updateRoleName" parameterType="great.bean.Role">
 		update tbRole set roleName = #{roleName} where roleId = #{roleId}
 	</update>

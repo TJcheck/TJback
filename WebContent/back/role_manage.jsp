@@ -33,14 +33,20 @@ body {
 </style>
 </head>
 <body>
-	<form class="form-inline definewidth m20" action="index.html" method="get">
-		角色名称：
-		<input type="text" name="rolename" id="rolename" class="abc input-default" placeholder="" value="">
-		&nbsp;&nbsp;
-		<button type="submit" class="btn btn-primary">查询</button>
-		&nbsp;&nbsp;
-		<button type="button" class="btn btn-success" id="addnew">新增角色</button>
-	</form>
+	<!-- 当前页信息、总页数信息 -->
+	<input type="hidden" value='${requestScope.pageInfo.currentPage}' id="currentPage">
+	<input type="hidden" value='${requestScope.pageInfo.totalPage}' id="totalPage">
+	<input type="hidden" value='${requestScope.pageInfo.totalNum}' id="totalNum">
+	<input type="hidden" id="roleName" value="">
+
+
+	角色名称：
+	<input type="text" name="queryRoleName" id="queryRoleName" class="abc input-default" placeholder="" value="">
+	&nbsp;&nbsp;
+	<button type="button" class="btn btn-primary" onclick="serach()">查询</button>
+	&nbsp;&nbsp;
+	<button type="button" class="btn btn-success" id="addnew">新增角色</button>
+
 	<table class="table table-bordered table-hover definewidth m10">
 		<thead>
 			<tr>
@@ -50,10 +56,10 @@ body {
 				<th>操作</th>
 			</tr>
 		</thead>
-		<tbody>
+		<tbody id="myTbody">
 			<c:choose>
-				<c:when test="${not empty requestScope.roleList}">
-					<c:forEach items="${requestScope.roleList}" var="role" varStatus="st">
+				<c:when test="${not empty requestScope.pageInfo.datasets.roleList}">
+					<c:forEach items="${requestScope.pageInfo.datasets.roleList}" var="role" varStatus="st">
 						<tr>
 							<td>${st.count}</td>
 							<td>${role.roleId}</td>
@@ -65,9 +71,25 @@ body {
 						</tr>
 					</c:forEach>
 				</c:when>
+				<c:otherwise>
+					<tr>
+						<td colspan="4" align="center">暂无数据</td>
+					</tr>
+				</c:otherwise>
 			</c:choose>
 		</tbody>
 	</table>
+	<p align="center">
+		<button type="button" class="btn btn-primary" onclick="previousPage();">上一页</button>
+		&nbsp;
+		<button type="button" class="btn btn-primary" onclick="nextPage();">下一页</button>
+		当前页：
+		<span id="cpage">${requestScope.pageInfo.currentPage}</span>
+		总条数：
+		<span id="num">${requestScope.pageInfo.totalNum}</span>
+		总页：
+		<span id="apage">${requestScope.pageInfo.totalPage}</span>
+	</p>
 </body>
 <script>
 	// 添加角色
@@ -98,8 +120,8 @@ body {
 					if (data == "success")
 					{
 						alert("成功");
-						  window.location.href = "${pageContext.request.contextPath}/admin/roleManagerPage.action";
-						 
+						  /* window.location.href = "${pageContext.request.contextPath}/admin/roleManagerPage.action"; */
+						 responseData();
 					} else
 					{
 						alert("失败");
@@ -118,6 +140,94 @@ body {
 	function updateRoleName(roleName,roleId)
 	{
 		window.location.href = "${pageContext.request.contextPath}/admin/updateRolePage.action?roleName=" + roleName + "&roleId="+ roleId ;
+	}
+	
+	// 接收后台端改变的页面信息数据
+	function responseData()
+	{
+		$.ajax(
+		{
+			type : "post",
+			url : "${pageContext.request.contextPath}/admin/roleListPaging.action",
+			dataType : 'json',
+			data :
+			{
+				'currentPage' : $('#currentPage').val(),
+				'roleName' : $('#roleName').val()
+			},
+			success : function(data)
+			{
+				if(data.totalNum == 0)
+				{
+					$('#myTbody').html("<td colspan='4' align='center'>暂无数据</td>");
+					return;
+				}
+				
+				var str = "";
+				for(var i = 0; i < data.datasets.roleList.length; i++) 
+				{
+				  	str += "<tr>";
+					str += "<td>" + (i+1) + "</td>";
+					str += "<td>" + data.datasets.roleList[i].roleId+ "</td>";
+					str += "<td>" + data.datasets.roleList[i].roleName + "</td>";
+					str += "<td><button type='button' class='btn btn-primary' onclick=\"delRole('"+data.datasets.roleList[i].roleId+"')\">删除</button>&nbsp;<button type='button' class='btn btn-primary' onclick=\"updateRoleName('"+data.datasets.roleList[i].roleName+"','"+data.datasets.roleList[i].roleId+"')\">修改角色名</button></td>";
+					str += "</tr>";
+				}
+				console.log(str);
+				$('#myTbody').html(str);
+				// 设置当前页和总页信息
+				$('#currentPage').val(data.currentPage);
+				$('#totalPage').val(data.totalPage);
+				$('#totalNum').val(data.totalNum);
+				console.log($('#currentPage').val());
+				console.log($('#totalPage').val());
+				console.log($('#totalNum').val());
+				// 改变span显示标记
+				$('#cpage').html($('#currentPage').val());
+				$('#apage').html($('#totalPage').val());
+				$('#num').html($('#totalNum').val());
+			},
+			error : function(data)
+			{
+				window.alert("与服务器失去连接！！");
+			}
+		
+		});
+	}
+	// 上翻页
+	function previousPage()
+	{
+		
+		var currentPage = $('#currentPage').val();
+		if(--currentPage <= 0)
+		{
+			$('#currentPage').val(1);
+		}else
+		{
+			$('#currentPage').val(currentPage)
+		}
+		responseData(); 
+	}
+
+	// 下翻页
+	function nextPage()
+	{
+		var currentPage = $('#currentPage').val();
+		if (++currentPage > $('#totalPage').val())
+		{
+			$('#currentPage').val($('#totalPage').val());
+		} else
+		{
+			$('#currentPage').val(currentPage);
+		}
+		responseData();
+	}
+	// 根据角色名查询角色
+	function serach()
+	{
+		$("#roleName").val($("#queryRoleName").val());
+		$('#currentPage').val(1);
+		responseData();
 	}
 </script>
 </html>

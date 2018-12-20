@@ -14,6 +14,7 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/back/assets/js/config-min.js"></script>
 </head>
 <body>
+	<input id="menuList" type="hidden" value="${requestScope.menuList}">
 	<div class="header">
 		<div class="dl-title">
 			<!--<img src="/chinapost/Public/assets/img/top.png">-->
@@ -34,10 +35,7 @@
 			</div>
 			<ul id="J_Nav" class="nav-list ks-clear">
 				<li class="nav-item dl-selected">
-					<div class="nav-item-inner nav-home">系统管理</div>
-				</li>
-				<li class="nav-item dl-selected">
-					<div class="nav-item-inner nav-order">业务管理</div>
+					<div class="nav-item-inner nav-home">菜单</div>
 				</li>
 			</ul>
 		</div>
@@ -52,51 +50,48 @@
 	</div>
 </body>
 <script>
+	var menuList = ${requestScope.menuList};
+	var str = new Array();
+	var num = 1;
+	var flag = new Object();
+	var menu = new Array();
+	for (var i = 0; i < menuList.length; i++)
+	{
+		/* 三级菜单数组 */
+		var items = new Array();
+		/* 二级菜单对象 */
+		var obj = new Object();
+		for (var j = 0; j < menuList.length; j++)
+		{
+			var object = new Object();
+			/* 找出所有的三级菜单 */
+			if (menuList[j].parentId == menuList[i].menuId)
+			{
+				num += 1;
+				object.id = num;
+				object.text = menuList[j].menuName;
+				object.href = "${pageContext.request.contextPath}" + menuList[j].menuUrl;
+				console.log(object.href);
+				items.push(object);
+			}
+		}
+		// 
+		if (menuList[i].parentId == 0)
+		{
+			obj.text = menuList[i].menuName;
+			obj.items = items;
+			menu.push(obj);
+		}
+	}
+	flag.id = 1;
+	flag.menu = menu;
+	str.push(flag);
+
+	console.log(str);
 	BUI.use('common/main', function()
 	{
-		var config = [
-		{
-			id : '1',
-			menu : [
-			{
-				text : '系统管理',
-				items : [
-				{
-					id : '12',
-					text : '机构管理',
-					href : 'Node/index.html'
-				},
-				{
-					id : '3',
-					text : '角色管理',
-					href : '${pageContext.request.contextPath}/admin/roleManagerPage.action'
-				},
-				{
-					id : '4',
-					text : '用户管理',
-					href : 'User/index.html'
-				},
-				{
-					id : '6',
-					text : '菜单管理',
-					href : 'Menu/index.html'
-				} ]
-			} ]
-		},
-		{
-			id : '7',
-			homePage : '9',
-			menu : [
-			{
-				text : '业务管理',
-				items : [
-				{
-					id : '9',
-					text : '查询业务',
-					href : 'Node/index.html'
-				} ]
-			} ]
-		} ];
+
+		var config = str;
 		new PageUtil.MainPage(
 		{
 			modulesConfig : config

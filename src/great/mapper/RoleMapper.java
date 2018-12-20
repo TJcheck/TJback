@@ -12,11 +12,13 @@ public interface RoleMapper
 	public int addRole(Role role);
 
 	// 查找所有角色
-	public List<Role> queryRole();
+	public List<Role> queryRole(Role role);
 
 	// 删除角色
 	public int delRole(int roleId);
 
 	// 修改角色名称
 	public int updateRoleName(Role role);
+	
+
 }

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="great.mapper.ProjectMapper">
+    <!--创建项目Id -->
+    <select id="createId" resultType="int">
+    select seq_tbProject.nextval from dual
+    </select>
+	<!-- 添加项目 -->
+	<insert id="addProject" parameterType="great.bean.Project">
+		insert into tbProject(PROJECTID,PROJECTNAME,DEPTID,PROJECTPRICE) values(#{projectId},#{projectName},#{deptId},#{projectPrice})
+	</insert>
+	<!-- 查找项目-->
+	<select id="queryProject" parameterType="great.bean.Project" resultType="great.bean.Project">
+		select projectId,projectName,p.deptId,deptName,projectPrice from tbproject p,tbDept d
+		 where p.deptId=d.deptId
+		    <if test="projectId !=0">
+			and projectId = #{projectId}
+			</if>
+			<if test="projectName!=null and projectName!=''">
+			and projectName like '%${projectName}%'
+			</if>
+	</select>
+	<!-- 删除项目 -->
+	<delete id="delProject" parameterType="int">
+		delete from tbProject where projectId=#{projectId}
+	</delete>
+	<!-- 更新项目 -->
+	<update id="updateProject" parameterType="great.bean.Project">
+     update tbProject set projectName = #{projectName},deptId = #{deptId},projectPrice= #{projectPrice} where projectId = #{projectId}
+	</update>
+	<!-- 批量添加细项 -->
+	<insert id="addItems" parameterType="map">
+	insert into tbProjectItem(projectId,itemId) 
+    select #{projectId},a.* from (
+		<foreach collection="itemIds" index="index" item="itemId" separator="union all">
+			(select #{itemId} from dual)
+		</foreach>
+		)a
+	</insert>
+	<!-- 查询项中间表 -->
+	<select id="queryItems" parameterType="great.bean.ProjectItem" resultType="great.bean.ProjectItem">
+	select projectId,itemId from tbProjectItem
+	<where>
+	  <if test="projectId !=0">
+			 projectId = #{projectId}
+	</if>
+	</where>
+	</select>
+	<!-- 删除项目细项中间表 -->
+	<delete id="delProItems" parameterType="int">
+	delete from tbProjectItem where projectId=#{projectId}
+	</delete>
+	</mapper>

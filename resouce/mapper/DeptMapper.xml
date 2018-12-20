@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="great.mapper.DeptMapper">
+	<!-- 分页查找科室 -->
+	<select id="queryDept" parameterType="great.bean.Dept"
+		resultType="great.bean.Dept">
+		select deptId,deptName from tbDept
+		<where>
+			<if test="deptName != null and deptName != ''">
+				 deptName like '%${deptName}%'
+			</if>
+		</where>
+	</select>
+	<!-- 添加科室 -->
+	<insert id="addDept" parameterType="string">
+		insert into
+		tbDept(deptId,deptName) values(seq_tbDept.nextval,#{deptName})
+	</insert>
+	<!-- 删除科室 -->
+	<delete id="delDept" parameterType="int">
+		delete from tbDept where
+		deptId=#{deptId}
+	</delete>
+	<!-- 修改科室名称 -->
+	<update id="updateDeptName" parameterType="great.bean.Dept">
+		update tbDept set
+		deptName=#{deptName} where deptId=#{deptId}
+	</update>
+</mapper>

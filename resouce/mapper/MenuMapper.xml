@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="great.mapper.MenuMapper">
+	<!-- 添加菜单 -->
+	<insert id="addMenu" parameterType="great.bean.Menu">
+		insert into tbMenu(menuId,menuName,menuUrl,parentId)values(SEQ_tbMenu.nextval,#{menuName},#{menuUrl},#{parentId})
+	</insert>
+	<!-- 查找一级菜单 -->
+	<select id="queryFirstMenu" resultType="great.bean.Menu">
+		select menuId,menuName,menuUrl,parentId from tbMenu where parentId = 0
+	</select>
+	<!-- 查询所有菜单 -->
+	<select id="queryAllMenu" parameterType="great.bean.Menu" resultType="great.bean.Menu">
+		select menuId,menuName,menuUrl,parentId from tbMenu
+		<where>
+			<if test="menuName!=null">
+				and menuName like '%${menuName}%'
+			</if>
+		</where>
+	</select>
+	<!-- 删除菜单 -->
+	<delete id="delMenu" parameterType="int">
+		delete from tbMenu where menuId = #{menuId}
+	</delete>
+	<!-- 根据Id查找菜单 -->
+	<select id="queryMenuById" parameterType="int" resultType="great.bean.Menu">
+		select menuId,menuName,menuUrl,parentId from tbMenu where menuId = #{menuId}
+	</select>
+	<!-- 根据Id更新菜单 -->
+	<update id="updateMenu" parameterType="great.bean.Menu">
+		update tbMenu set menuId = #{menuId},menuName = #{menuName}, menuUrl = #{menuUrl}, parentId = #{parentId} where menuId = #{menuId}
+	</update>
+	<!-- 根据批量删除菜单 -->
+	<delete id="delMenuAll" parameterType="map">
+		delete from tbMenu where id in
+		<foreach collection="menuIdArray" item="item" index="index" open="(" separator="," close=")">
+			(#{item})
+		</foreach>
+	</delete>
+</mapper>

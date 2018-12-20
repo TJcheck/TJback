@@ -15,7 +15,7 @@
 			value="upload" />
 	</form>
 	<a href="javascript:show()">显示条形码</a>
-	<a href="/webtest/file/showFile.action">显示文件</a>
+	<a href="/webtest/admin/adminMainPage.action">登录</a>
 	<object id="LODOP1"
 		classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width=800
 		height=400>

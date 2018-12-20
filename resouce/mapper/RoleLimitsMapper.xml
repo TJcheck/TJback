@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="great.mapper.RoleLimitsMapper">
+	<select id="queryLimitsByRoleId" parameterType="int" resultType="great.bean.RoleLimits">
+		select roleId,menuId from tbRoleMenu where roleId = #{roleId}
+	</select>
+	<delete id="delRoleLimitsByRoleId" parameterType="int">
+		delete from tbRoleMenu where roleId = #{roleId}
+	</delete>
+	<insert id="addRoleLimits" parameterType="map">
+		insert into tbRoleMenu(roleId,menuId)
+		select #{roleId},a.* from (
+		<foreach collection="menuIdArray" index="index" item="item" separator="union all">
+			(select #{item} from dual)
+		</foreach>
+		)a
+	</insert>
+	<!-- 根据角色Id查找菜单 -->
+	<select id="queryMenuByRoleId" parameterType="int" resultType="great.bean.Menu">
+		select a.menuId,menuName,menuUrl,parentId from tbMenu a,tbRoleMenu b where a.menuId = b.menuId and b.roleId
+		=#{roleId}
+	</select>
+
+</mapper>

@@ -47,7 +47,7 @@ body {
 				<td>
 					<button type="button" class="btn btn-primary" type="button" onclick="addRole()">提交</button>
 					&nbsp;&nbsp;
-					<button type="button" class="btn btn-success" name="backid" onclick="backRoleList()">返回列表</button>
+					<button type="button" class="btn btn-success" name="backid" onclick="back()">返回列表</button>
 				</td>
 			</tr>
 		</table>
@@ -83,9 +83,9 @@ body {
 
 		});
 	}
-	function backRoleList()
+	function back()
 	{
-		window.location.href = "${pageContext.request.contextPath}/admin/roleManagerPage.action";
+		window.location.href = "${pageContext.request.contextPath}/admin/menuMangePage.action";
 	}
 </script>
 </html>

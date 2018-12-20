@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="great.mapper.ItemMapper">
+	<!-- 添加细项 -->
+	<insert id="addItem" parameterType="great.bean.Item">
+		insert into tbItem(itemId,itemName,itemUnit,itemLess,itemHigh) values(seq_tbItem.nextval,#{itemName},#{itemUnit},#{itemLess},#{itemHigh})
+	</insert>
+	<!-- 查找细项 -->
+	<select id="queryItem" parameterType="great.bean.Item" resultType="great.bean.Item">
+		select ITEMID,ITEMNAME,ITEMUNIT,ITEMLESS,ITEMHIGH from tbitem
+		<where>
+			<if test="itemName!=null and itemName!=''">
+			 itemName like '%${itemName}%'
+			</if>
+			<if test="itemId !=0">
+			itemId = #{itemId}
+			</if>
+		</where>
+	</select>
+	<!-- 删除细项 -->
+	<delete id="delItem" parameterType="int">
+		delete from tbItem where itemId=#{itemId}
+	</delete>
+	<!-- 更新细项 -->
+	<update id="updateItem" parameterType="great.bean.Item">
+		update tbItem set
+		itemName=#{itemName},itemUnit=#{itemUnit},itemLess=#{itemLess},itemHigh=#{itemHigh} where itemId=#{itemId}
+	</update>
+	</mapper>
