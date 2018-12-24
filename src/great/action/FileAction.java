@@ -25,6 +25,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
@@ -68,19 +69,23 @@ public class FileAction {
 
 	// 读取Excel文件
 	@RequestMapping("/readExcel.action")
-	public ModelAndView readExcel(String fileName, int companyId) {
+	@ResponseBody
+	public String readExcel(@RequestParam(value="fileName")String fileName, @RequestParam(value="companyId")int companyId ,@RequestParam(value="chargeId")int chargeId,int comboId) {
 		List<List<Object>> list = null;
 		try {
 			//获取真实路径
 			String path = ContextLoader.getCurrentWebApplicationContext().getServletContext().getRealPath("/");
 			//读取Excel表格文件数据
-			list = ReadExcel.readExcel(new File(path + "/uploadFile/" + "a1234.xlsx"), 0);
+			list = ReadExcel.readExcel(new File(path + "/uploadFile/" + fileName+".xlsx"), 0);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println(examineService.addExamine(list, companyId));
-		return null;
+		if(examineService.addExamine(list, companyId,chargeId,comboId)) {
+			return "success";
+		}else {
+			return "error";
+		}
 	}
 
 	// 显示上传文件夹里的文件

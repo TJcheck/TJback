@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="great.mapper.ChargeMapper">
+	<select id="queryCharge" parameterType="great.bean.Charge" resultType="great.bean.Charge">
+		select c.chargeId,c.companyId,cp.companyName,c.comboId,cb.comboName,c.chargeNum,c.chargePrice,c.reservationStatus,p.parameterName "reservationParameter",to_char(c.reservationTime,'YYYY-MM-DD') reservationTime,to_char(c.examineTime,'YYYY-MM-DD') examineTime,c.chargeStatus,p1.parameterName "chargeParameter" from tbCharge c,tbParameter p,tbParameter p1,tbCompany cp,tbCombo cb where c.companyId=cp.companyId and c.comboId=cb.comboId and c.reservationStatus=p.parameterId and c.chargeStatus=p1.parameterId
+	</select>
+	
+	<update id="updateReservation" parameterType="great.bean.Charge">
+		update tbCharge set reservationStatus=#{reservationStatus}
+		<if test="examineTime!=null">
+		,examineTime=to_date(#{examineTime},'YYYY-MM-DD')
+		</if>
+		 where chargeId=#{chargeId}
+	</update>
+</mapper>

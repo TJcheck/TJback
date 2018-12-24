@@ -7,13 +7,14 @@ public class Examine {
 	private String exSex;//性别
 	private String exAge;//年龄
 	private String exPhone;//手机号码
-	
+	private int comboId;
 	
 	public Examine() {
 		// TODO Auto-generated constructor stub
 	}
-	
-	public Examine(int examineId, int companyId, String exName, String exSex, String exAge, String exPhone) {
+
+	public Examine(int examineId, int companyId, String exName, String exSex, String exAge, String exPhone,
+			int comboId) {
 		super();
 		this.examineId = examineId;
 		this.companyId = companyId;
@@ -21,7 +22,10 @@ public class Examine {
 		this.exSex = exSex;
 		this.exAge = exAge;
 		this.exPhone = exPhone;
+		this.comboId = comboId;
 	}
+
+
 
 	public int getExamineId() {
 		return examineId;
@@ -60,10 +64,18 @@ public class Examine {
 		this.exPhone = exPhone;
 	}
 
+	public int getComboId() {
+		return comboId;
+	}
+
+	public void setComboId(int comboId) {
+		this.comboId = comboId;
+	}
+
 	@Override
 	public String toString() {
 		return "Examine [examineId=" + examineId + ", companyId=" + companyId + ", exName=" + exName + ", exSex="
-				+ exSex + ", exAge=" + exAge + ", exPhone=" + exPhone + "]";
+				+ exSex + ", exAge=" + exAge + ", exPhone=" + exPhone + ", comboId=" + comboId + "]";
 	}
 	
 	

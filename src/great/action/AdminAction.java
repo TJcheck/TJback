@@ -854,7 +854,7 @@ public class AdminAction {
 	@RequestMapping(value = "/adminMainPage.action")
 	public ModelAndView adminMainPage() {
 		ModelAndView mav = new ModelAndView();
-		int roleId = 3;
+		int roleId = 1;
 		List<Menu> menuList = roleLimitsMapper.queryMenuByRoleId(roleId);
 		mav.setViewName("/back/admin_main");
 		ObjectMapper mapper = new ObjectMapper();
@@ -870,5 +870,7 @@ public class AdminAction {
 	}
 	// 批量删除菜单
 //	public Map<S> delMenuAll(Map<String, Object> map);
-
+	public void test() {
+		
+	}
 }

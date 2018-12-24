@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 个人体检表 -->
 <mapper namespace="great.mapper.ExamineMapper">
 	<insert id="addExamine" parameterType="great.bean.Examine">
-		insert into tbExamine(examineId,companyId,exName,exSex,exAge,exPhone,exDate) values(SEQ_TBEXAMINE.nextval,#{companyId},#{exName},#{exSex},#{exAge},#{exPhone},to_date('2018-12-19','YYYY-MM-DD'))
+		insert into tbExamine(examineId,companyId,comboId,exName,exSex,exAge,exPhone,exDate) values(SEQ_TBEXAMINE.nextval,#{companyId},#{comboId},#{exName},#{exSex},#{exAge},#{exPhone},to_date('2018-12-19','YYYY-MM-DD'))
 	</insert>
 </mapper>
