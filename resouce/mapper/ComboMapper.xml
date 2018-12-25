@@ -54,4 +54,24 @@
 	<select id="queryCheckPro" parameterType="int" resultType="great.bean.ProjectCombo">
 	select pc.comboId,pc.projectId,p.projectName,p.deptId,d.deptName from tbProjectCombo pc,tbProject p,tbDept d where pc.comboId = #{comboId} and pc.projectId=p.projectId and d.deptId=p.deptId
 	</select>
+	<!-- 删除套餐 -->
+	<delete id="delCombos" parameterType="int">
+	delete from tbCombo where comboId in
+	  <foreach item="comboId" collection="array" open="(" separator="," close=")">
+            #{comboId}
+    </foreach>
+    </delete>
+     <!-- 批量删除套餐中间表 -->
+   <delete id="delProCombos" parameterType="int">
+	delete from tbProjectCombo where comboId in
+	  <foreach item="comboId" collection="array" open="(" separator="," close=")">
+            #{comboId}
+    </foreach>
+	</delete>
+	<!-- 查询套餐项目中间表获得项目名和科室和项目单价 -->
+	<select id="queryCheckPro" parameterType="int" resultType="great.bean.ProjectCombo">
+	select pc.comboId,pc.projectId,p.projectName,p.projectPrice,p.deptId,d.deptName 
+	from tbProjectCombo pc,tbProject p,tbDept d 
+	where pc.comboId = #{comboId} and pc.projectId=p.projectId and d.deptId=p.deptId
+	</select> 
 	</mapper>

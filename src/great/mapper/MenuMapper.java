@@ -5,12 +5,12 @@ import java.util.Map;
 
 import great.bean.Menu;
 
-public interface MenuMapper
-{
+public interface MenuMapper {
 	// 新增加菜单
 	public int addMenu(Menu menu);
-	
+
 	public int addMenu();
+
 	// 查找所有一级菜单
 	public List<Menu> queryFirstMenu();
 
@@ -28,5 +28,8 @@ public interface MenuMapper
 
 	// 批量删除菜单
 	public int delMenuAll(Map<String, Object> map);
+
+	// 根据菜单父Id查找所有下面的子菜单
+	public List<Integer> queryMenuIdByParentId(int menuId);
 
 }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="great.mapper.AdminMapper">
+	<!-- 用户登录 -->
+	<select id="adminLogin" parameterType="great.bean.Admin" resultType="great.bean.Admin">
+		select adminId,adminName,adminPwd,deptId,adminPhone,roleId from tbAdmin where adminName = #{adminName}
+		and adminPwd = #{adminPwd}
+	</select>
+	<!-- 重置密码 -->
+	<update id="updateAdminPwd" parameterType="great.bean.Admin">
+		update tbAdmin set adminPwd = #{adminPwd} where adminName = #{adminName}
+	</update>
+</mapper>

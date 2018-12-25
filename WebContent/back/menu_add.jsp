@@ -14,6 +14,7 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/back/js/ckform.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/back/js/common.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/back/js/jquery.serializejson.min.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/back/js/jquery.validate.min.js"></script>
 
 <style type="text/css">
 body {
@@ -64,7 +65,7 @@ body {
 			<tr>
 				<td class="tableleft"></td>
 				<td>
-					<button type="button" class="btn btn-primary" onclick = "addMenu();">保存</button>
+					<button type="submit" class="btn btn-primary" >保存</button>
 					&nbsp;&nbsp;
 					<button type="button" class="btn btn-success" name="backid" id="backid" onclick="back()">返回列表</button>
 				</td>
@@ -73,15 +74,40 @@ body {
 	</form>
 </body>
 <script>
+	$().ready(function()
+	{
+		$("#myForm").validate(
+		{
+			rules :
+			{
+				menuName : "required",
+				menuUrl : "required",
+				parentId : "required"
+			},
+			messages :
+			{
+				menuName : "请输入菜单名字",
+				menuUrl : "请输入菜单链接",
+				parentId : "请输入菜单父级菜单"
+			}
+		});
+	});
+	$.validator.setDefaults(
+	{
+		submitHandler : function()
+		{
+			addMenu();
+		}
+	});
 	function addMenu()
 	{
 		$.ajax(
 		{
-			type: "post",
-			url: '${pageContext.request.contextPath}/admin/addMenu.action',
+			type : "post",
+			url : '${pageContext.request.contextPath}/admin/addMenu.action',
 			contentType : "application/json;charset=utf-8", //如果采用requestbody那么一定要加
 			dataType : "text",
-			data:JSON.stringify($('#myForm').serializeJSON()),
+			data : JSON.stringify($('#myForm').serializeJSON()),
 			success : function(redata)
 			{
 				console.log(redata);
@@ -97,7 +123,7 @@ body {
 			{
 				window.alert("与服务器失去连接");
 			}
-	
+
 		});
 	}
 	function back()

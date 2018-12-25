@@ -13,6 +13,7 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/back/js/ckform.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/back/js/common.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/back/js/jquery.serializejson.min.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/back/js/jquery.validate.min.js"></script>
 <style type="text/css">
 body {
 	padding-bottom: 40px;
@@ -44,7 +45,7 @@ body {
 			<tr>
 				<td class="tableleft"></td>
 				<td>
-					<button type="button" class="btn btn-primary" type="button" onclick="addRole()">提交</button>
+					<button type="submit" class="btn btn-primary" type="button">提交</button>
 					&nbsp;&nbsp;
 					<button type="button" class="btn btn-success" name="backid" onclick="backRoleList()">返回列表</button>
 				</td>
@@ -53,6 +54,28 @@ body {
 	</form>
 </body>
 <script>
+	$().ready(function()
+	{
+		$("#myForm").validate(
+		{
+			rules :
+			{
+				roleName : "required",
+			},
+			messages :
+			{
+				roleName : "请输入角色名字",
+			}
+		});
+	});
+	$.validator.setDefaults(
+	{
+		submitHandler : function()
+		{
+			console.log("sss");
+			addRole();
+		}
+	});
 	function addRole()
 	{
 		$.ajax(
@@ -84,6 +107,7 @@ body {
 	}
 	function backRoleList()
 	{
+		alert(1111);
 		window.location.href = "${pageContext.request.contextPath}/admin/roleManagerPage.action";
 	}
 </script>

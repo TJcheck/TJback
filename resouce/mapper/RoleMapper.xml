@@ -22,4 +22,11 @@
 	<update id="updateRoleName" parameterType="great.bean.Role">
 		update tbRole set roleName = #{roleName} where roleId = #{roleId}
 	</update>
+	<!-- 批量删除 -->
+	<delete id="delAllRole" parameterType="map">
+		delete from tbRole where RoleId in
+		<foreach collection="roleIdArray" item="item" index="index" open="(" separator="," close=")">
+			(#{item})
+		</foreach>
+	</delete>
 </mapper>

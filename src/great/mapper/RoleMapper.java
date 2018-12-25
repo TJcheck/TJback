@@ -1,13 +1,12 @@
 package great.mapper;
 
 import java.util.List;
+import java.util.Map;
 
-import org.springframework.stereotype.Repository;
 
 import great.bean.Role;
 
-public interface RoleMapper
-{
+public interface RoleMapper {
 	// 添加角色
 	public int addRole(Role role);
 
@@ -19,6 +18,8 @@ public interface RoleMapper
 
 	// 修改角色名称
 	public int updateRoleName(Role role);
-	
+
+	// 批量删除角色
+	public int delAllRole(Map<String, Object> map);
 
 }

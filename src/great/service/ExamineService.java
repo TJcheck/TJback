@@ -58,5 +58,8 @@ public class ExamineService {
 	public Examine queryExamine(int examineId) {
 		return examineMapper.queryExamine(examineId);
 	};
-
+	public List<Examine> queryExamineInfo(int companyId)
+	{
+		return examineMapper.queryExamineInfo(companyId);
+	}
 }

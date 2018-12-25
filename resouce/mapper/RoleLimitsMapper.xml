@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="great.mapper.RoleLimitsMapper">
+	<!-- 根据角色Id查找该角色拥有的菜单 -->
 	<select id="queryLimitsByRoleId" parameterType="int" resultType="great.bean.RoleLimits">
 		select roleId,menuId from tbRoleMenu where roleId = #{roleId}
 	</select>
+	<!-- 根据角色Id删除该角色拥有的菜单 -->
 	<delete id="delRoleLimitsByRoleId" parameterType="int">
 		delete from tbRoleMenu where roleId = #{roleId}
 	</delete>
+	<!-- 批量插入一个角色Id的所有菜单 -->
 	<insert id="addRoleLimits" parameterType="map">
 		insert into tbRoleMenu(roleId,menuId)
 		select #{roleId},a.* from (
@@ -20,5 +23,18 @@
 		select a.menuId,menuName,menuUrl,parentId from tbMenu a,tbRoleMenu b where a.menuId = b.menuId and b.roleId
 		=#{roleId}
 	</select>
-
+	<!-- 根据角色Id批量删除多个角色拥有的菜单 -->
+	<delete id="delRoleLimitsByRoleList" parameterType="map">
+		delete from tbRoleMenu where RoleId in
+		<foreach collection="roleIdArray" item="item" index="index" open="(" separator="," close=")">
+			(#{item})
+		</foreach>
+	</delete>
+	<!-- 根据菜单Id批量删除角色拥有的菜单 -->
+	<delete id="delRoleLimitsByMenuList">
+		delete from tbRoleMenu where menuId in
+		<foreach collection="menuIdArray" item="item" index="index" open="(" separator="," close=")">
+			(#{item})
+		</foreach>
+	</delete>
 </mapper>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="great.mapper.CompanyMapper">
+	<select id="queryOrderInfo" parameterType="great.bean.Company" resultType="great.bean.Company">
+		select x.*,l.* from(select a.companyId,a.companyName,a.companyPwd,a.companyBalance,c.comboId,c.comboName,c.comboCost,(c.comboCost * b.chargeNum) allCost from tbCompany a,
+		tbCharge b,tbCombo c where a.companyId = b.companyId and b.comboId = c.comboId 
+		<if test="companyName!=null">
+			and a.companyName like '%${companyName}%'
+		</if>	
+		) x left join( select count(companyId) peopleNum,d.companyId ss from tbExamine d where exstatus = 1
+		group by d.companyId) l on x.companyId = l.ss
+	</select>
+</mapper>

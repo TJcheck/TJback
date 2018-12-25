@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+	<!-- spring mvc 自动扫描注解的时候，不去扫描@Service -->
+	<context:component-scan base-package="great">
+		<!--将Controller的注解排除掉 -->
+		<context:exclude-filter type="annotation"
+			expression="great.action" />
+	</context:component-scan>
+	<!-- mybatis整合 -->
+	<!-- 数据源 -->
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName"
+			value="oracle.jdbc.OracleDriver" />
+		<property name="url"
+			value="jdbc:oracle:thin:@localhost:1521:orcl" />
+		<property name="username" value="healthGroup" />
+		<property name="password" value="123456" />
+	</bean>
+
+	<!-- 会话工厂 必须使用MyBatis-spring整合jar包中的工厂bean。 -->
+	<bean id="sqlSessionFactory"
+		class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 加载本地的MyBatis配置文件。为了加载pagehelper插件。 -->
+		<property name="configLocation"
+			value="classpath:mybatis/mybatis-config.xml"></property>
+		<property name="dataSource" ref="dataSource"></property>
+		<!-- 本地映射。非必要。 -->
+		<property name="mapperLocations">
+			<array>
+				<value>classpath:mapper/*.xml</value>
+			</array>
+		</property>
+	</bean>
+
+	<!-- Mapper工厂 (接口) -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="sqlSessionFactoryBeanName"
+			value="sqlSessionFactory"></property>
+		<property name="basePackage" value="great.mapper"></property>
+	</bean>
+
+</beans>

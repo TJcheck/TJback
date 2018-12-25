@@ -18,4 +18,8 @@
 	<delete id="deleteExamine" parameterType="int">
 		delete from tbExamine where companyId=#{companyId}
 	</delete>
+	<!-- 根据公司Id查找该公司人员的具体信息 -->
+	<select id="queryExamineInfo" parameterType="int" resultType="great.bean.Examine">
+		select exName,exSex,exAge,exPhone,exStatus from tbExamine where companyId=#{companyId}
+	</select>
 </mapper>

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,8 +22,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 
+import great.bean.Admin;
 import great.bean.Combo;
+import great.bean.Company;
 import great.bean.Dept;
+import great.bean.Examine;
 import great.bean.Item;
 import great.bean.Menu;
 import great.bean.PageInfo;
@@ -34,7 +38,9 @@ import great.bean.RoleLimits;
 import great.bean.ztreeNode;
 import great.service.AdminService;
 import great.service.ComboService;
+import great.service.CompanyService;
 import great.service.DeptService;
+import great.service.ExamineService;
 import great.service.ItemService;
 import great.service.MenuService;
 import great.service.ProjectService;
@@ -57,6 +63,9 @@ public class AdminAction {
 	private RoleLimitsService roleLimitsMapper;
 
 	@Autowired
+	private CompanyService companyService;
+
+	@Autowired
 	private DeptService deptService;// 科室设置
 
 	@Autowired
@@ -67,6 +76,9 @@ public class AdminAction {
 
 	@Autowired
 	private ComboService comboService;// 套餐设置
+
+	@Autowired
+	private ExamineService examineService;
 
 	// 套餐配置
 	// 项目更新
@@ -869,8 +881,168 @@ public class AdminAction {
 		return mav;
 	}
 	// 批量删除菜单
-//	public Map<S> delMenuAll(Map<String, Object> map);
-	public void test() {
-		
+	@RequestMapping(value = "/delMenuAll.action")
+	@ResponseBody
+	public String delMenuAll(@RequestParam(value = "menuId[]") int[] menuIdArray)
+	{
+		for (int i : menuIdArray)
+		{
+			System.out.println(i);
+		}
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("menuIdArray", menuIdArray);
+
+		if (menuService.delMenuAll(map))
+		{
+			System.out.println("成功");
+			return "success";
+		} else
+		{
+			return "fail";
+		}
+
 	}
+	// 批量删除角色
+	@RequestMapping(value = "/delAllRole.action")
+	@ResponseBody
+	public String delAllRole(@RequestParam(value = "roleId[]") int[] roleIdArray)
+	{
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("roleIdArray", roleIdArray);
+
+		if (roleService.delAllRole(map))
+		{
+			return "success";
+		} else
+		{
+			return "fail";
+		}
+	}
+	// 用户登录
+		@RequestMapping(value = "/adminlogin.action")
+		@ResponseBody
+		public String adminlogin(@RequestParam(value = "userPwd") String adminPwd, @RequestParam(value = "userName") String adminName, HttpServletRequest req)
+		{
+			Admin admin = new Admin();
+			admin.setAdminName(adminName);
+			admin.setAdminPwd(adminPwd);
+			Admin adminLogin = adminService.adminLogin(admin);
+			if (adminLogin != null)
+			{
+				// 将用户存放到session里面
+				HttpSession session = req.getSession();
+				session.setAttribute("adminLogin", adminLogin);
+				return "1";
+			} else
+			{
+				return "3";
+			}
+
+		}
+		// 用户退出
+		@RequestMapping(value = "/adminExit.action")
+		public ModelAndView adminExit(HttpServletRequest req)
+		{
+			ModelAndView mav = new ModelAndView();
+			HttpSession session = req.getSession();
+			// 销毁session
+			session.invalidate();
+			mav.setViewName("/back/admin_login");
+			return mav;
+		}
+		// 重置用户密码
+		@RequestMapping(value = "/updateAdminPwd")
+		@ResponseBody
+		public String updateAdminPwd(@RequestParam(value = "userName") String adminName, @RequestParam(value = "userPwd") String adminPwd)
+		{
+			Admin admin = new Admin();
+			admin.setAdminName(adminName);
+			admin.setAdminPwd(adminPwd);
+			if (adminService.updateAdminPwd(admin))
+			{
+				return "1";
+			} else
+			{
+				return "3";
+			}
+		}
+
+		// 查询团体订单信息
+		@RequestMapping(value = "/queryOrderInfo.action")
+		public ModelAndView queryOrderInfo(HttpServletRequest req)
+		{
+			ModelAndView mav = new ModelAndView();
+			// 第一次跳转当前页数设置为1
+			int currentPage = 1;
+			// 分页工具分页
+			Page<Object> page = PageHelper.startPage(currentPage, 5);
+			// 查询角色数据
+			Company company = new Company();
+			List<Company> companyList = companyService.queryOrderInfo(company);
+			currentPage = page.getPageNum();// 当前页数
+			int totalPage = page.getPages();// 获得总页数
+			int totalNum = (int) page.getTotal();// 总记录数
+			// 如果什么都没有查到，当前页变为0
+			if (totalNum == 0)
+			{
+				currentPage = 0;
+			}
+			Map<String, Object> data = new HashMap<String, Object>();// 查询结果数据
+
+			data.put("companyList", companyList);
+
+			PageInfo pageInfo = new PageInfo(currentPage, totalPage, totalNum, data);
+
+			req.setAttribute("pageInfo", pageInfo);
+			mav.setViewName("/back/order_info");
+			return mav;
+		}
+		// 分页查询团体订单信息
+		@RequestMapping(value = "/queryOrderInfoPaging.action")
+		@ResponseBody
+		public PageInfo queryOrderInfoPaging(@RequestParam(value = "currentPage") int currentPage, @RequestParam(value = "companyName") String companyName)
+		{
+			// 分页工具分页
+			Page<Object> page = PageHelper.startPage(currentPage, 5);
+			// 查询角色数据
+			Company company = new Company();
+			if (companyName != null && !companyName.equals(""))
+			{
+				company.setCompanyName(companyName);
+			}
+			List<Company> companyList = companyService.queryOrderInfo(company);
+			currentPage = page.getPageNum();// 当前页数
+			int totalPage = page.getPages();// 获得总页数
+			int totalNum = (int) page.getTotal();// 总记录数
+			// 如果什么都没有查到，当前页变为0
+			if (totalNum == 0)
+			{
+				currentPage = 0;
+			}
+			Map<String, Object> data = new HashMap<String, Object>();// 查询结果数据
+			data.put("companyList", companyList);
+			PageInfo pageInfo = new PageInfo(currentPage, totalPage, totalNum, data);
+			return pageInfo;
+		}
+		// 团检单位对账时跳转到公司套餐项目信息界面
+		@RequestMapping(value = "/queryCheckPro.action")
+		public ModelAndView queryCheckPro(@RequestParam(value = "comboId") int comboId, HttpServletRequest req)
+		{
+			ModelAndView mav = new ModelAndView();
+			List<ProjectCombo> projectComboList = comboService.queryCheckPro(comboId);
+			req.setAttribute("projectComboList", projectComboList);
+			mav.setViewName("/back/combo_info");
+			return mav;
+		}
+
+		// 团检单位对账时跳转到公司个人信息界面
+		@RequestMapping(value = "/queryExamineInfo.action")
+		public ModelAndView queryExamineInfo(@RequestParam(value = "companyId") int companyId, HttpServletRequest req)
+		{
+			ModelAndView mav = new ModelAndView();
+			List<Examine> peopleList = examineService.queryExamineInfo(companyId);
+			req.setAttribute("peopleList", peopleList);
+			mav.setViewName("/back/people_info");
+			return mav;
+		}
 }

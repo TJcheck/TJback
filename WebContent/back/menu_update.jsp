@@ -14,6 +14,7 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/back/js/ckform.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/back/js/common.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/back/js/jquery.serializejson.min.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/back/js/jquery.validate.min.js"></script>
 
 <style type="text/css">
 body {
@@ -66,7 +67,7 @@ body {
 			<tr>
 				<td class="tableleft"></td>
 				<td>
-					<button type="button" class="btn btn-primary" onclick="updateMenu();">保存</button>
+					<button type="submit" class="btn btn-primary" >保存</button>
 					&nbsp;&nbsp;
 					<button type="button" class="btn btn-success" name="backid" id="backid" onclick="back();">返回列表</button>
 				</td>
@@ -75,10 +76,40 @@ body {
 	</form>
 </body>
 <script>
+	$().ready(function()
+	{
+		$("#myForm").validate(
+		{
+			rules :
+			{
+				menuName : "required",
+				menuUrl : "required",
+				parentId : "required"
+			},
+			messages :
+			{
+				menuName : "请输入菜单名字",
+				menuUrl : "请输入菜单链接",
+				parentId : "请输入菜单父级菜单"
+			}
+		});
+	});
+	$.validator.setDefaults(
+	{
+		submitHandler : function()
+		{
+			updateMenu();
+		}
+	});
 	$(function()
 	{
+		// 默认设置菜单上级菜单
 		var selectValue = $("#parentSelected").val();
 		$("#parentId").val(selectValue);
+		if ($("#parentId").val() == 0)
+		{
+			$("#parentId").attr("disabled", "disabled");
+		}
 	});
 
 	function updateMenu()

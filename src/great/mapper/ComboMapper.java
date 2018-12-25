@@ -5,6 +5,7 @@ import java.util.Map;
 
 import great.bean.Combo;
 import great.bean.ProjectCombo;
+
 //套餐
 public interface ComboMapper {
 	// 创建项目Id
@@ -24,13 +25,19 @@ public interface ComboMapper {
 
 	// 修改套餐
 	public int updateCombo(Combo combo);
-	
-	//查询套餐项目
+
+	// 查询套餐项目
 	public List<ProjectCombo> queryProjects(ProjectCombo projectCombo);
-	
-	//删除套餐项目中间表
+
+	// 删除套餐项目中间表
 	public int delProCombo(int comboId);
-	
-	//查询套餐中间表
+
+	// 批量删除套餐项目中间表
+	public int delProCombos(int[] comboIds);
+
+	// 批量删除套餐
+	public int delCombos(int[] comboIds);
+
+	// 通过套餐Id查询项目
 	public List<ProjectCombo> queryCheckPro(int comboId);
 }

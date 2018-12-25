@@ -11,7 +11,7 @@
 	</select>
 	<!-- 查询所有菜单 -->
 	<select id="queryAllMenu" parameterType="great.bean.Menu" resultType="great.bean.Menu">
-		select menuId,menuName,menuUrl,parentId from tbMenu
+		select * from(select a.menuId,a.menuName,a.menuUrl,a.parentId,decode(b.menuName,null,'一级菜单',b.menuName) parentName from tbMenu a left join tbMenu b on a.parentId = b.menuId)
 		<where>
 			<if test="menuName!=null">
 				and menuName like '%${menuName}%'
@@ -20,7 +20,7 @@
 	</select>
 	<!-- 删除菜单 -->
 	<delete id="delMenu" parameterType="int">
-		delete from tbMenu where menuId = #{menuId}
+		delete from tbMenu where menuId = #{menuId} or parentId = #{menuId}
 	</delete>
 	<!-- 根据Id查找菜单 -->
 	<select id="queryMenuById" parameterType="int" resultType="great.bean.Menu">
@@ -32,9 +32,17 @@
 	</update>
 	<!-- 根据批量删除菜单 -->
 	<delete id="delMenuAll" parameterType="map">
-		delete from tbMenu where id in
+		delete from tbMenu where menuId in
+		<foreach collection="menuIdArray" item="item" index="index" open="(" separator="," close=")">
+			(#{item})
+		</foreach>
+		or parentId in
 		<foreach collection="menuIdArray" item="item" index="index" open="(" separator="," close=")">
 			(#{item})
 		</foreach>
 	</delete>
+	<!-- 根据菜单父Id查找所有下面的子菜单 -->
+	<select id="queryMenuIdByParentId" parameterType="int" resultType="int">
+		select menuId from tbMenu where parentId = #{parentId}
+	</select>
 </mapper>

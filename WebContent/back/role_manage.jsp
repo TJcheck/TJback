@@ -46,10 +46,15 @@ body {
 	<button type="button" class="btn btn-primary" onclick="serach()">查询</button>
 	&nbsp;&nbsp;
 	<button type="button" class="btn btn-success" id="addnew">新增角色</button>
+	&nbsp;&nbsp;
+	<button type="button" class="btn btn-danger" onclick="delAll();">批量删除</button>
 
 	<table class="table table-bordered table-hover definewidth m10">
 		<thead>
 			<tr>
+				<th>
+					<input id="select1" type="checkbox" name="select1" onchange="changeStatus();">
+				</th>
 				<th>序号</th>
 				<th>角色id</th>
 				<th>角色名称</th>
@@ -61,6 +66,9 @@ body {
 				<c:when test="${not empty requestScope.pageInfo.datasets.roleList}">
 					<c:forEach items="${requestScope.pageInfo.datasets.roleList}" var="role" varStatus="st">
 						<tr>
+							<td>
+								<input type="checkbox" name="select" value="${role.roleId}">
+							</td>
 							<td>${st.count}</td>
 							<td>${role.roleId}</td>
 							<td>${role.roleName}</td>
@@ -73,7 +81,7 @@ body {
 				</c:when>
 				<c:otherwise>
 					<tr>
-						<td colspan="4" align="center">暂无数据</td>
+						<td colspan="5" align="center">暂无数据</td>
 					</tr>
 				</c:otherwise>
 			</c:choose>
@@ -92,6 +100,64 @@ body {
 	</p>
 </body>
 <script>
+	//批量删除
+	function delAll()
+	{
+		if (confirm("确定要删除吗？"))
+		{
+		var obj = $("input[name='select']");
+		var	arr = [];
+			for(k in obj)
+			{
+				if(obj[k].checked)
+					arr.push(obj[k].value);
+			}
+			if (arr.length == 0)
+				{
+				   alert("请至少选择一个菜单");
+				   return;
+				}
+			console.log(arr);
+			$.ajax(
+			{
+				type : "post",
+				url : '${pageContext.request.contextPath}/admin/delRoleAll.action',
+				dataType : "text",
+				data : {"roleId" : arr},
+				success : function(data)
+				{
+					if (data == "success")
+					{
+						alert("成功");
+						responseData();
+						  /* window.location.href = "${pageContext.request.contextPath}/admin/roleManagerPage.action"; */
+						
+					} else
+					{
+						alert("失败");
+						
+					}
+				},
+				error : function(data)
+				{
+					window.alert("与服务器失去连接");
+				}
+	
+			});
+			
+		}
+			
+	}
+	//父复选框状态改变
+	function changeStatus()
+	{
+		if($("#select1").prop('checked')){
+			$("[name='select']").prop("checked",true);
+		}else{
+			$("[name='select']").prop("checked",false);
+		}
+	}
+	
 	// 添加角色
 	$(function()
 	{
@@ -116,7 +182,6 @@ body {
 				data : {"roleId" : roleId},
 				success : function(data)
 				{
-					console.log(data);
 					if (data == "success")
 					{
 						alert("成功");
@@ -139,7 +204,7 @@ body {
 	// 更新角色
 	function updateRoleName(roleName,roleId)
 	{
-		window.location.href = "${pageContext.request.contextPath}/admin/updateRolePage.action?roleName=" + roleName + "&roleId="+ roleId ;
+		 window.location.href = "${pageContext.request.contextPath}/admin/updateRolePage.action?roleName=" + roleName + "&roleId="+ roleId ; 	
 	}
 	
 	// 接收后台端改变的页面信息数据
@@ -159,7 +224,9 @@ body {
 			{
 				if(data.totalNum == 0)
 				{
-					$('#myTbody').html("<td colspan='4' align='center'>暂无数据</td>");
+					$('#myTbody').html("<td colspan='5' align='center'>暂无数据</td>");
+					// 让父复选框变为没有被选中
+					$('#select1').prop("checked",false);
 					return;
 				}
 				
@@ -167,6 +234,7 @@ body {
 				for(var i = 0; i < data.datasets.roleList.length; i++) 
 				{
 				  	str += "<tr>";
+				  	str += "<td> <input type='checkbox' name='select' value='" +data.datasets.roleList[i].roleId + "'</td>"
 					str += "<td>" + (i+1) + "</td>";
 					str += "<td>" + data.datasets.roleList[i].roleId+ "</td>";
 					str += "<td>" + data.datasets.roleList[i].roleName + "</td>";
@@ -175,17 +243,20 @@ body {
 				}
 				console.log(str);
 				$('#myTbody').html(str);
+				
+				// 让父复选框变为没有被选中
+				$('#select1').prop("checked",false);
 				// 设置当前页和总页信息
 				$('#currentPage').val(data.currentPage);
 				$('#totalPage').val(data.totalPage);
 				$('#totalNum').val(data.totalNum);
-				console.log($('#currentPage').val());
-				console.log($('#totalPage').val());
-				console.log($('#totalNum').val());
+
 				// 改变span显示标记
 				$('#cpage').html($('#currentPage').val());
 				$('#apage').html($('#totalPage').val());
 				$('#num').html($('#totalNum').val());
+				
+				$("[name='select1']").prop("checked",false);
 			},
 			error : function(data)
 			{
@@ -228,6 +299,54 @@ body {
 		$("#roleName").val($("#queryRoleName").val());
 		$('#currentPage').val(1);
 		responseData();
+	}
+	// 批量删除
+	function delAll()
+	{
+		if (confirm("确定要删除吗？"))
+		{
+		var obj = $("input[name='select']");
+		var	arr = [];
+			for(k in obj)
+			{
+				if(obj[k].checked)
+					arr.push(obj[k].value);
+			}
+			if (arr.length == 0)
+				{
+				   alert("请至少选择一个菜单");
+				   return;
+				}
+			console.log("arr" + arr);
+			$.ajax(
+			{
+				type : "post",
+				url : '${pageContext.request.contextPath}/admin/delAllRole.action',
+				dataType : "text",
+				data : {"roleId" : arr},
+				success : function(data)
+				{
+					console.log(data);
+					if (data == "success")
+					{
+						alert("成功");
+						responseData();
+						  /* window.location.href = "${pageContext.request.contextPath}/admin/roleManagerPage.action"; */		
+					} else
+					{
+						alert("失败");
+						
+					}
+				},
+				error : function(data)
+				{
+					window.alert("与服务器失去连接");
+				}
+
+			});
+			
+		}
+			
 	}
 </script>
 </html>

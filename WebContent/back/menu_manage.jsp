@@ -75,7 +75,7 @@ body {
 							<td>${st.count}</td>
 							<td>${menu.menuName}</td>
 							<td>${menu.menuUrl}</td>
-							<td>${menu.parentId}</td>
+							<td>${menu.parentName}</td>
 							<td>
 								<button type="button" class="btn btn-primary" onclick="delMenu(${menu.menuId})">删除</button>
 								<button type="button" class="btn btn-primary" onclick="updateMenu('${menu.menuId}')">修改菜单信息</button>
@@ -85,7 +85,7 @@ body {
 				</c:when>
 				<c:otherwise>
 					<tr>
-						<td colspan="5" align="center">暂无数据</td>
+						<td colspan="6" align="center">暂无数据</td>
 					</tr>
 				</c:otherwise>
 			</c:choose>
@@ -121,6 +121,33 @@ body {
 				   alert("请至少选择一个菜单");
 				   return;
 				}
+			$.ajax(
+			{
+				type : "post",
+				url : '${pageContext.request.contextPath}/admin/delMenuAll.action',
+				dataType : "text",
+				data : {"menuId" : arr},
+				success : function(data)
+				{
+					console.log(data);
+					if (data == "success")
+					{
+						alert("成功");
+						responseData();
+						  /* window.location.href = "${pageContext.request.contextPath}/admin/roleManagerPage.action"; */
+						
+					} else
+					{
+						alert("失败");
+						
+					}
+				},
+				error : function(data)
+				{
+					window.alert("与服务器失去连接");
+				}
+
+			});
 			
 		}
 			
@@ -202,7 +229,9 @@ body {
 			{
 				if(data.totalNum == 0)
 				{
-					$('#myTbody').html("<td colspan='4' align='center'>暂无数据</td>");
+					$('#myTbody').html("<td colspan='6' align='center'>暂无数据</td>");
+					// 让父复选框变为没有被选中
+					$('#select1').prop("checked",false);
 					return;
 				}
 				
@@ -210,15 +239,18 @@ body {
 				for(var i = 0; i < data.datasets.menuList.length; i++) 
 				{
 				  	str += "<tr>";
+				  	str += "<td> <input type='checkbox' name='select' value='" +data.datasets.menuList[i].menuId + "'</td>"
 					str += "<td>" + (i+1) + "</td>";
 					str += "<td>" + data.datasets.menuList[i].menuName+ "</td>";
 					str += "<td>" + data.datasets.menuList[i].menuUrl + "</td>";
-					str += "<td>" + data.datasets.menuList[i].parentId + "</td>";
+					str += "<td>" + data.datasets.menuList[i].parentName + "</td>";
 					str += "<td><button type='button' class='btn btn-primary' onclick=\"delMenu('"+data.datasets.menuList[i].menuId+"')\">删除</button>&nbsp;<button type='button' class='btn btn-primary' onclick=\"updateMenu('"+data.datasets.menuList[i].menuId+"')\">修改菜单信息</button></td>";
 					str += "</tr>";
 				}
 				/* console.log(str); */
 				$('#myTbody').html(str);
+				// 让父复选框变为没有被选中
+				$('#select1').prop("checked",false);
 				// 设置当前页和总页信息
 				$('#currentPage').val(data.currentPage);
 				$('#totalPage').val(data.totalPage);
