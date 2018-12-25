@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+    pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
@@ -43,46 +43,43 @@ body {
 </head>
 <body>
 	<!-- 当前页信息、总页数信息 -->
-	<input type="hidden" id="comboName" value=""> 项目名称：
+	<input type="hidden" id="comboName" value=""> 体检人员名称：
 	<input type="text" id="query" class="abc input-default" placeholder=""
 		value=""> &nbsp;&nbsp;
 	<button type="button" class="btn btn-primary" onclick="query($(this))">查询</button>
-	&nbsp;&nbsp;
-	<button type="button" class="btn btn-success" id="addnew">新增套餐</button>
-	&nbsp;&nbsp;
-	<button type="button" class="btn btn-success" onclick="query($(this))">编辑</button>
-	&nbsp;&nbsp;
-	<button type="button" class="btn btn-success" id="del"
-		style="display: none">批量删除</button>
 	<table class="table table-bordered table-hover definewidth m10" id="comboTable">
 		<thead>
 			<tr>
-				<th style="display: none" id="delManage"><input type="checkbox"
-					name="delboxs" id="delboxs"></th>
 				<th>序号</th>
-				<th>套餐Id</th>
-				<th>套餐名称</th>
-				<th>公司</th>
-				<th>套餐价格</th>
+				<th>团检单位</th>
+				<th>团检套餐</th>
+				<th>体检人员号码</th>
+				<th>名字</th>
+				<th>性别</th>
+				<th>年龄</th>
+				<th>手机号</th>
+				<th>体检日期</th>
 				<th>操作</th>
 			</tr>
 		</thead>
 		<tbody id="myTbody">
 			<c:choose>
-				<c:when test="${not empty requestScope.pageInfo.datasets.comboList}">
-					<c:forEach items="${requestScope.pageInfo.datasets.comboList}"
-						var="combo" varStatus="st">
+				<c:when test="${not empty requestScope.pageInfo.datasets.examineList}">
+					<c:forEach items="${requestScope.pageInfo.datasets.examineList}"
+						var="examine" varStatus="st">
 						<tr>
 							<td>${st.count}</td>
-							<td>${combo.comboId}</td>
-							<td>${combo.comboName}</td>
-							<td>${combo.companyName}</td>
-							<td>${combo.comboCost}</td>
+							<td>${examine.companyName}</td>
+							<td>${examine.comboName}</td>
+							<td>${examine.examineId}</td>
+							<td>${examine.exName}</td>
+							<td>${examine.exSex}</td>
+							<td>${examine.exAge}</td>
+							<td>${examine.exPhone}</td>
+							<td>${examine.exDate}</td>
 							<td>
 								<button type="button" class="btn btn-primary"
-									onclick="delCombo(${combo.comboId})">删除</button>
-								<button type="button" class="btn btn-primary"
-									onclick="updateCombo(${combo.comboId})">修改套餐</button>
+									onclick="showExamine(${examine.examineId})">查看导检单</button>
 							</td>
 						</tr>
 					</c:forEach>
@@ -112,105 +109,16 @@ body {
 </body>
 <script>
 $(document).ready(function(){
-	// 跳转到添加套餐列表
-	$('#addnew').click(function()
-			{
-				window.location.href = "${pageContext.request.contextPath}/admin/addComboPage.action";
-			});
 	//条数变化
 	$("#onePage").change(function(){
 		responseData();
 	});
-	//复选框
-	$("#delboxs").click(function(){
-		delboxs();
-	});
-	//批量删除
-	$("#del").click(function(){
-		del();
-	});
 });
 
-//批量删除
-function del(){
-    <!--获取选中复选框的值-->
-		var delboxs = new Array();
-	   $("input:checkbox[name = 'delbox']:checked").each(function(i){ 
-		   delboxs[i] = $(this).val();	
-		})
-		//var delboxs = $("input[type=checkbox][name = delbox]:checked").val();
-		console.log(delboxs);
-		if(delboxs.length==0){
-			window.alert('请选择要删除的对象');
-			return;
-		}
-		if (confirm("确定要删除吗？"))
-		{
-			$.ajax(
-			{
-				type : "post",
-				url : '${pageContext.request.contextPath}/admin/delCombos.action',
-				dataType : "text",
-				data : {delboxs:delboxs},
-				success : function(data)
-				{
-					if (data == "success")
-					{
-						alert("成功");
-						responseData();
-					} else
-					{
-						alert("失败");
-					}
-				},
-				error : function(data)
-				{
-					window.alert("与服务器失去连接");
-				}
-			});
-		}  
-}
-//批量选中复选框
-	function delboxs(){
-	var flag = $("#delboxs").is(':checked');
-	$("[name='delbox']").attr("checked",flag);
-}
-	// 删除项目
-	function delCombo(comboId)
+	// 跳转到导检单详情页面
+	function showExamine(examineId)
 	{
-		window.alert(comboId);
-		if (confirm("确定要删除吗？"))
-		{
-			$.ajax(
-			{
-				type : "post",
-				url : '${pageContext.request.contextPath}/admin/delCombo.action',
-				dataType : "text",
-				data : {"comboId" : comboId},
-				success : function(data)
-				{
-					if (data == "success")
-					{
-						alert("成功");
-						 $("#delboxs").attr("checked",false);//不管用
-						responseData();
-					} else
-					{
-						alert("失败");
-					}
-				},
-				error : function(data)
-				{
-					window.alert("与服务器失去连接");
-				}
-			});
-		}
-
-	}
-	// 跳转到更新项目页面
-	function updateCombo(comboId)
-	{
-		window.location.href = "${pageContext.request.contextPath}/admin/updateComboPage.action?comboId="+ comboId+"&&currentPage="+$("#currentPage").text();
+		window.location.href = "${pageContext.request.contextPath}/medicalStation/examineDetails.action?examineId="+ examineId+"&&currentPage="+$("#currentPage").text();
 	}
 	
 	// 接收后台端改变的页面信息数据
@@ -233,27 +141,22 @@ function del(){
 			}
 		}else if(btnv=="查询"){
 			currentPage=1;
-		}else if(btn="编辑"){
-			$("#delManage").toggle();
-			$("#del").toggle();
 		}
 		$('#currentPage').text(currentPage);
 		responseData();
 	}
 	
 	function responseData(){
-		var flag=$("#delManage").is(":visible");//th是否是可显示
-       // var temp1=$("#delManage").is(":hidden");//是否隐藏
 		$.ajax(
 		{
 			type : "post",
-			url : "${pageContext.request.contextPath}/admin/comboListPaging.action",
+			url : "${pageContext.request.contextPath}/medicalStation/examineListPaging.action",
 			dataType : 'json',
 			data :
 			{
 				'currentPage' : $('#currentPage').text(),
 				'onePage' :$("#onePage").val(),
-				'comboName' : $('#query').val()//查询条件
+				'examineName' : $('#query').val()//查询条件
 			},
 			success : function(data)
 			{
@@ -263,23 +166,20 @@ function del(){
 					return;
 				}
 				var str = "";
-				var dataList = data.datasets.comboList;
-				//删除过后本页没有条数
-				if(dataList.length==0){
-					var currentPage = parseInt($('#currentPage').text())-1;
-					$('#currentPage').text(currentPage);
-					responseData();
-				}
+				var dataList = data.datasets.examineList;
 				for(var i = 0; i < dataList.length; i++) 
 				{
 				  	str += "<tr>";
-					str += flag==false?"":"<td><input type='checkbox' name='delbox' id='delbox' value='"+dataList[i].comboId+"'></td>";
 					str += "<td>" + (i+1) + "</td>";
-					str += "<td>" + dataList[i].comboId+ "</td>";
-					str += "<td>" + dataList[i].comboName + "</td>";
 					str += "<td>" + dataList[i].companyName+ "</td>";
-					str += "<td>" + dataList[i].comboCost + "</td>";
-					str += "<td><button type='button' class='btn btn-primary' onclick=\"delCombo('"+dataList[i].comboId+"')\">删除</button>&nbsp;<button type='button' class='btn btn-primary' onclick=\"updateCombo("+dataList[i].comboId+")\">修改套餐</button></td>";
+					str += "<td>" + dataList[i].comboName  + "</td>";
+					str += "<td>" + dataList[i].examineId+ "</td>";
+					str += "<td>" + dataList[i].exName  + "</td>";
+					str += "<td>" + dataList[i].exSex + "</td>";
+					str += "<td>" + dataList[i].exAge  + "</td>";
+					str += "<td>" + dataList[i].exPhone  + "</td>";
+					str += "<td>" + dataList[i].exDate   + "</td>";
+					str += "<td><button type='button' class='btn btn-primary' onclick=\"showExamine("+dataList[i].examineId+")\">查看导检单</button></td>";
 					str += "</tr>";
 				}
 				$('#myTbody').html(str);

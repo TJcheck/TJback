@@ -17,4 +17,6 @@ public interface ExamineMapper {
 	public int deleteExamine(int companyId);
 
 	public List<Examine> queryExamineInfo(int companyId);
+	//显示个人体检表列表
+    public List<Examine> queryExamine(Examine examine);
 }

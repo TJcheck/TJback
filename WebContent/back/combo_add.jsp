@@ -17,7 +17,7 @@
 	src="${pageContext.request.contextPath}/back/js/jquery.min.js"></script>
 <script type="text/javascript"
 	src="${pageContext.request.contextPath}/back/js/jquery.sorted.js"></script>
-<script type="text/javascript"
+ <script type="text/javascript"
 	src="${pageContext.request.contextPath}/back/js/bootstrap.js"></script>
 <script type="text/javascript"
 	src="${pageContext.request.contextPath}/back/js/ckform.js"></script>
@@ -63,12 +63,19 @@ body {
 		</tr>
 		<tr>
 			<td width="10%" class="tableleft">套餐价格</td>
-			<td><input type="text"  id="comboCost" /></td>
+			<td><select id="discount">
+			<option value="1">100%</option>
+			<option value="0.9">90%</option>
+			<option value="0.8">80%</option>
+			</select>
+			<input type="text"  id="comboCost" readonly="readonly"/>
+			<input type="button" class="btn btn-primary" id="price" value="手动输入" />
+			</td>
 		</tr>
 		<tr>
 			<td class="tableleft"></td>
 			<td>
-			<input type="button" class="btn btn-primary" id="choose" value="选择项目">
+			<input type="button" class="btn btn-primary" id="choose" value="查看项目" />
 				<button type="button" class="btn btn-primary" 
 					onclick="addCombo()">提交</button> &nbsp;&nbsp;
 				<button type="button" class="btn btn-success" name="backid"
@@ -77,7 +84,8 @@ body {
 		</tr>
 	</table>
 	</div>
-	<div class="col-md-6">
+	<div class="col-md-6" id="data">
+	<h3>套餐价格:</h3><span id="comboPrice"></span>
 	<h3>选择项目:</h3>
 	<ul id="dataTree" class="ztree"></ul>
 </div>
@@ -86,11 +94,38 @@ body {
 </body>
 <script>
 $(document).ready(function(){
-	$("#choose").click(function(){
-		createTree();//加载
+	var flag=true;
+	createTree();//加载
+	$("#choose").click(function(){//隐藏项目
+		$("#data").toggle();
+	});
+
+	$("#price").click(function(){
+		if(flag){
+			flag=false;
+		}else{
+			flag=true;
+		}
+		$("#comboCost").attr("readOnly",flag); 
+	});
+	$("#discount").change(function(){
+		comboPrice();
 	});
 });	
 
+//计算价格
+function comboPrice(){
+	var treenode = $.fn.zTree.getZTreeObj("dataTree");//获取数组
+	var chkNodeArr =treenode.getCheckedNodes(true);
+	var comboPrice = 0;
+	for(var i=0;i<chkNodeArr.length;i++){
+		comboPrice+=chkNodeArr[i].projectPrice;
+	}
+	var discount = $("#discount").val();
+	comboPrice = parseInt(comboPrice*discount);
+	var str = discount==1?'':'   折扣:'+discount;
+	$("#comboPrice").text(comboPrice+'元'+str);
+}
 //创建项目树
 function createTree(){
 	var setting={
@@ -98,6 +133,9 @@ function createTree(){
 				enable:true,
 				chkStyle:"checkbox"
 			},
+			 callback: {//ztree触发事件
+		            onCheck: comboPrice
+		        },
 			data:{
 				key:{name:"projectName",
 				},
@@ -125,17 +163,29 @@ function createTree(){
 
 //添加
 	function addCombo() {
-		alert('点击提交按钮');
+	    if($("#comboName").val()==''){
+	    	window.alert("套餐名不能为空");
+	    	return;
+	    }
 		var treenode = $.fn.zTree.getZTreeObj("dataTree");//获取数组
 		var chkNodeArr =treenode.getCheckedNodes(true);
-		//var items = "";
 		var projects = new Array();
+		var comboCost = 0;
 		for(var i=0;i<chkNodeArr.length;i++){
-			//str+=chkNodeArr[i].itemId+":";
 			projects[i]=chkNodeArr[i].projectId;
-			console.log(chkNodeArr[i]);
+			comboCost+=chkNodeArr[i].projectPrice;
 		}
-		window.alert(projects);
+		if(projects.length==0){
+			window.alert('请选择合适的项目');
+			return;
+		}
+		//计算套餐价格 手动输入或者自动计算
+		if($("#comboCost").val()==''){
+			var discount=$("#discount").val();//折扣
+			comboCost = parseInt(comboCost*discount);
+			$("#comboCost").val(comboCost);
+		}
+		window.alert($("#comboCost").val());
 		var combo={
 				"comboName" : $("#comboName").val(),
 				"companyId": $("#companyId").val(),
@@ -151,6 +201,9 @@ function createTree(){
 			success : function(data) {
 				if (data == "success") {
 					window.alert('添加成功');
+					createTree();//加载
+					$("#comboName").val('');
+					$("#comboCost").val('');
 				} else {
 					window.alert('添加失败');
 				}
@@ -161,7 +214,7 @@ function createTree(){
 		});
 	}
 	function backComboList() {
-		window.location.href = "${pageContext.request.contextPath}/admin/comboManagerPage.action";
+		window.location.href = "${pageContext.request.contextPath}/admin/comboManagerPage.action?currentPage=1";
 	}
 </script>
 </html>

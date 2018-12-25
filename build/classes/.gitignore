@@ -1,4 +1,7 @@
+/AdminMapper.xml
+/ChargeMapper.xml
 /ComboMapper.xml
+/CompanyMapper.xml
 /DeptMapper.xml
 /ExamineMapper.xml
 /ItemMapper.xml
@@ -7,6 +10,8 @@
 /ProjectMapper.xml
 /RoleLimitsMapper.xml
 /RoleMapper.xml
+/applicationContext-mybatis.xml
+/applicationContext-tx.xml
 /great/
-/CompanyMapper.xml
-/AdminMapper.xml
+/mybatis-config.xml
+/springmvc.xml

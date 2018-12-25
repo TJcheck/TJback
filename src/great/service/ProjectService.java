@@ -56,7 +56,10 @@ public class ProjectService {
 
 	// 删除项目
 	public boolean delProject(int projectId) {
-		return projectMapper.delProject(projectId)> 0;
+		int ret =projectMapper.delProject(projectId);
+		int ret1 =projectMapper.delProItems(projectId);
+		boolean flag = ret>0&& ret1>0;
+		return flag;
 	}
 	
 	//查询项目细项

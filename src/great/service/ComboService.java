@@ -7,18 +7,28 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import great.bean.Combo;
 import great.bean.ProjectCombo;
 import great.mapper.ComboMapper;
 
 @Service
-//@Transactional//事务注解，需要在spring 配置文件中开启事务注解驱动
+@Transactional//事务注解，需要在spring 配置文件中开启事务注解驱动
 public class ComboService {
 	// 注入项目映射器
 	@Resource
 	private ComboMapper comboMapper;
-
+	
+	//批量删除套餐
+	public boolean delCombos(int[] comboIds) {
+		//删除套餐项目中间表
+		int ret = comboMapper.delProCombos(comboIds);
+		//删除套餐
+		int ret1 = comboMapper.delCombos(comboIds);
+		boolean flag = ret>0&&ret1>0;
+		return flag;
+	}
 	// 添加套餐
 	public boolean addCombo(Combo combo) {
 		int[] projectIds = combo.getProjects();
@@ -57,7 +67,11 @@ public class ComboService {
 
 	// 删除项目
 	public boolean delCombo(int comboId) {
-		return comboMapper.delCombo(comboId) > 0;
+		//删除中间表
+		int ret = comboMapper.delProCombo(comboId);
+		int ret1 = comboMapper.delCombo(comboId);
+	    boolean flag = ret>0&&ret1>0;
+		return flag;
 	}
 
 	// 查询项目细项

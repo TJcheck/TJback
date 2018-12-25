@@ -2,13 +2,21 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- 个人体检表 -->
 <mapper namespace="great.mapper.ExamineMapper">
-	<!-- 添加个人  -->
+	<!-- 添加个人 -->
 	<insert id="addExamine" parameterType="great.bean.Examine">
-		insert into tbExamine(examineId,companyId,comboId,exName,exSex,exAge,exPhone,exDate) values(SEQ_TBEXAMINE.nextval,#{companyId},#{comboId},#{exName},#{exSex},#{exAge},#{exPhone},to_date('2018-12-19','YYYY-MM-DD'))
+		insert into
+		tbExamine(examineId,companyId,comboId,exName,exSex,exAge,exPhone,exDate)
+		values(SEQ_TBEXAMINE.nextval,#{companyId},#{comboId},#{exName},#{exSex},#{exAge},#{exPhone},to_date('2018-12-19','YYYY-MM-DD'))
 	</insert>
 	<!-- 查询个人体检 -->
-	<select id="queryExamine" parameterType="int" resultType="great.bean.Examine">
-		select e.examineId,e.companyId,c.companyName,e.comboId,cb.comboName,e.exName,e.exSex,e.exAge,e.exPhone,to_char(e.exDate,'YYYY-MM-DD') exDate,e.conclusion,e.exSuggest,e.exGuide,e.adminId,e.conclusionDate,e.exStatus,p.parameterName from tbExamine e,tbCompany c,tbCombo cb,tbParameter p where e.companyId=c.companyId and e.comboId=cb.comboId and e.exStatus=p.parameterId and e.examineId=#{examineId}
+	<select id="queryExamine" parameterType="int"
+		resultType="great.bean.Examine">
+		select
+		e.examineId,e.companyId,c.companyName,e.comboId,cb.comboName,e.exName,e.exSex,e.exAge,e.exPhone,to_char(e.exDate,'YYYY-MM-DD')
+		exDate,e.conclusion,e.exSuggest,e.exGuide,e.adminId,e.conclusionDate,e.exStatus,p.parameterName
+		from tbExamine e,tbCompany c,tbCombo cb,tbParameter p where
+		e.companyId=c.companyId and e.comboId=cb.comboId and
+		e.exStatus=p.parameterId and e.examineId=#{examineId}
 	</select>
 	<!-- 查询公司对应的个人体检号 -->
 	<select id="queryExamineId" parameterType="int" resultType="int">
@@ -16,10 +24,30 @@
 	</select>
 	<!-- 删除公司对应人员体检表 -->
 	<delete id="deleteExamine" parameterType="int">
-		delete from tbExamine where companyId=#{companyId}
+		delete from tbExamine
+		where companyId=#{companyId}
 	</delete>
 	<!-- 根据公司Id查找该公司人员的具体信息 -->
-	<select id="queryExamineInfo" parameterType="int" resultType="great.bean.Examine">
-		select exName,exSex,exAge,exPhone,exStatus from tbExamine where companyId=#{companyId}
+	<select id="queryExamineInfo" parameterType="int"
+		resultType="great.bean.Examine">
+		select exName,exSex,exAge,exPhone,exStatus from tbExamine
+		where companyId=#{companyId}
+	</select>
+	<!-- 查询个人体检表 -->
+	<select id="queryExamines" parameterType="great.bean.Examine"
+		resultType="great.bean.Examine">
+		select
+		examineId,e.comboId,b.comboName,e.companyId,companyName,EXNAME,EXSEX,EXAGE,EXPHONE,to_char(exDate,'YYYY-MM-DD')
+		exDate
+		from tbExamine e,tbCompany c,tbcombo b
+		where e.companyId=c.companyId
+		and e.comboId=b.comboId
+		<if test="examineId != 0">
+			and examineId = #{examineId}
+		</if>
+		<if test="companyId != 0">
+			and e.companyId = #{companyId}
+		</if>
+		order by examineId
 	</select>
 </mapper>

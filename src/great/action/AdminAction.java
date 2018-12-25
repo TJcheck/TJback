@@ -91,6 +91,17 @@ public class AdminAction {
 		return "failed";
 	}
 
+	// 套餐配置
+	// 批量删除套餐
+	@RequestMapping(value = "/delCombos.action")
+	@ResponseBody
+	public String delCombos(@RequestParam(value = "delboxs[]") int[] comboIds) {
+		if (comboService.delCombos(comboIds)) {
+			return "success";
+		}
+		return "failed";
+	}
+
 	// 查询项目项目树
 	@RequestMapping(value = "/queryProjects.action")
 	@ResponseBody
@@ -131,14 +142,16 @@ public class AdminAction {
 		return "failed";
 	}
 
-	// 跳转到更新套餐页面
+	//跳转到更新套餐页面
 	@RequestMapping(value = "/updateComboPage.action")
-	public ModelAndView updateComboPage(int comboId) {
+	public ModelAndView updateComboPage(int comboId,int currentPage)
+	{
 		ModelAndView mav = new ModelAndView();
 		Combo combo = new Combo();
 		combo.setComboId(comboId);
 		List<Combo> combos = comboService.queryCombo(combo);
 		mav.addObject("combo", combos.get(0));
+		mav.addObject("currentPage", currentPage);
 		mav.setViewName("/back/combo_update");
 		return mav;
 	}
@@ -149,7 +162,7 @@ public class AdminAction {
 		return "/back/combo_add";
 	}
 
-	// 删除项目
+	//删除套餐
 	@RequestMapping(value = "/delCombo.action")
 	@ResponseBody
 	public String delCombo(int comboId) {
@@ -159,7 +172,7 @@ public class AdminAction {
 		return "failed";
 	}
 
-	// 跳转到项目管理页面
+	// 跳转到套餐管理页面
 	@RequestMapping(value = "/comboManagerPage.action")
 	public ModelAndView comboManagerPage() {
 		ModelAndView mav = new ModelAndView();
@@ -864,185 +877,179 @@ public class AdminAction {
 
 	// 登录成功以后动态跳转的主页并且生成动态菜单，这里假设一个登录者的角色Id
 	@RequestMapping(value = "/adminMainPage.action")
-	public ModelAndView adminMainPage() {
+	public ModelAndView adminMainPage(HttpServletRequest req)
+	{
 		ModelAndView mav = new ModelAndView();
-		int roleId = 1;
+		Admin adminLogin = (Admin) req.getSession().getAttribute("adminLogin");
+		int roleId = adminLogin.getRoleId();
 		List<Menu> menuList = roleLimitsMapper.queryMenuByRoleId(roleId);
 		mav.setViewName("/back/admin_main");
 		ObjectMapper mapper = new ObjectMapper();
 		String str = null;
-		try {
+		try
+		{
 			str = mapper.writeValueAsString(menuList);
-		} catch (JsonProcessingException e) {
+		} catch (JsonProcessingException e)
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		mav.addObject("menuList", str);
+		mav.addObject("adminLogin", adminLogin);
 		return mav;
 	}
+
 	// 批量删除菜单
 	@RequestMapping(value = "/delMenuAll.action")
 	@ResponseBody
-	public String delMenuAll(@RequestParam(value = "menuId[]") int[] menuIdArray)
-	{
-		for (int i : menuIdArray)
-		{
+	public String delMenuAll(@RequestParam(value = "menuId[]") int[] menuIdArray) {
+		for (int i : menuIdArray) {
 			System.out.println(i);
 		}
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("menuIdArray", menuIdArray);
 
-		if (menuService.delMenuAll(map))
-		{
+		if (menuService.delMenuAll(map)) {
 			System.out.println("成功");
 			return "success";
-		} else
-		{
+		} else {
 			return "fail";
 		}
 
 	}
+
 	// 批量删除角色
 	@RequestMapping(value = "/delAllRole.action")
 	@ResponseBody
-	public String delAllRole(@RequestParam(value = "roleId[]") int[] roleIdArray)
-	{
+	public String delAllRole(@RequestParam(value = "roleId[]") int[] roleIdArray) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("roleIdArray", roleIdArray);
 
-		if (roleService.delAllRole(map))
-		{
+		if (roleService.delAllRole(map)) {
 			return "success";
-		} else
-		{
+		} else {
 			return "fail";
 		}
 	}
+
 	// 用户登录
-		@RequestMapping(value = "/adminlogin.action")
-		@ResponseBody
-		public String adminlogin(@RequestParam(value = "userPwd") String adminPwd, @RequestParam(value = "userName") String adminName, HttpServletRequest req)
-		{
-			Admin admin = new Admin();
-			admin.setAdminName(adminName);
-			admin.setAdminPwd(adminPwd);
-			Admin adminLogin = adminService.adminLogin(admin);
-			if (adminLogin != null)
-			{
-				// 将用户存放到session里面
-				HttpSession session = req.getSession();
-				session.setAttribute("adminLogin", adminLogin);
-				return "1";
-			} else
-			{
-				return "3";
-			}
-
-		}
-		// 用户退出
-		@RequestMapping(value = "/adminExit.action")
-		public ModelAndView adminExit(HttpServletRequest req)
-		{
-			ModelAndView mav = new ModelAndView();
+	@RequestMapping(value = "/adminlogin.action")
+	@ResponseBody
+	public String adminlogin(@RequestParam(value = "userPwd") String adminPwd,
+			@RequestParam(value = "userName") String adminName, HttpServletRequest req) {
+		Admin admin = new Admin();
+		admin.setAdminName(adminName);
+		admin.setAdminPwd(adminPwd);
+		Admin adminLogin = adminService.adminLogin(admin);
+		if (adminLogin != null) {
+			// 将用户存放到session里面
 			HttpSession session = req.getSession();
-			// 销毁session
-			session.invalidate();
-			mav.setViewName("/back/admin_login");
-			return mav;
-		}
-		// 重置用户密码
-		@RequestMapping(value = "/updateAdminPwd")
-		@ResponseBody
-		public String updateAdminPwd(@RequestParam(value = "userName") String adminName, @RequestParam(value = "userPwd") String adminPwd)
-		{
-			Admin admin = new Admin();
-			admin.setAdminName(adminName);
-			admin.setAdminPwd(adminPwd);
-			if (adminService.updateAdminPwd(admin))
-			{
-				return "1";
-			} else
-			{
-				return "3";
-			}
+			session.setAttribute("adminLogin", adminLogin);
+			return "1";
+		} else {
+			return "3";
 		}
 
-		// 查询团体订单信息
-		@RequestMapping(value = "/queryOrderInfo.action")
-		public ModelAndView queryOrderInfo(HttpServletRequest req)
-		{
-			ModelAndView mav = new ModelAndView();
-			// 第一次跳转当前页数设置为1
-			int currentPage = 1;
-			// 分页工具分页
-			Page<Object> page = PageHelper.startPage(currentPage, 5);
-			// 查询角色数据
-			Company company = new Company();
-			List<Company> companyList = companyService.queryOrderInfo(company);
-			currentPage = page.getPageNum();// 当前页数
-			int totalPage = page.getPages();// 获得总页数
-			int totalNum = (int) page.getTotal();// 总记录数
-			// 如果什么都没有查到，当前页变为0
-			if (totalNum == 0)
-			{
-				currentPage = 0;
-			}
-			Map<String, Object> data = new HashMap<String, Object>();// 查询结果数据
+	}
 
-			data.put("companyList", companyList);
+	// 用户退出
+	@RequestMapping(value = "/adminExit.action")
+	public ModelAndView adminExit(HttpServletRequest req) {
+		ModelAndView mav = new ModelAndView();
+		HttpSession session = req.getSession();
+		// 销毁session
+		session.invalidate();
+		mav.setViewName("/back/admin_login");
+		return mav;
+	}
 
-			PageInfo pageInfo = new PageInfo(currentPage, totalPage, totalNum, data);
+	// 重置用户密码
+	@RequestMapping(value = "/updateAdminPwd")
+	@ResponseBody
+	public String updateAdminPwd(@RequestParam(value = "userName") String adminName,
+			@RequestParam(value = "userPwd") String adminPwd) {
+		Admin admin = new Admin();
+		admin.setAdminName(adminName);
+		admin.setAdminPwd(adminPwd);
+		if (adminService.updateAdminPwd(admin)) {
+			return "1";
+		} else {
+			return "3";
+		}
+	}
 
-			req.setAttribute("pageInfo", pageInfo);
-			mav.setViewName("/back/order_info");
-			return mav;
+	// 查询团体订单信息
+	@RequestMapping(value = "/queryOrderInfo.action")
+	public ModelAndView queryOrderInfo(HttpServletRequest req) {
+		ModelAndView mav = new ModelAndView();
+		// 第一次跳转当前页数设置为1
+		int currentPage = 1;
+		// 分页工具分页
+		Page<Object> page = PageHelper.startPage(currentPage, 5);
+		// 查询角色数据
+		Company company = new Company();
+		List<Company> companyList = companyService.queryOrderInfo(company);
+		currentPage = page.getPageNum();// 当前页数
+		int totalPage = page.getPages();// 获得总页数
+		int totalNum = (int) page.getTotal();// 总记录数
+		// 如果什么都没有查到，当前页变为0
+		if (totalNum == 0) {
+			currentPage = 0;
 		}
-		// 分页查询团体订单信息
-		@RequestMapping(value = "/queryOrderInfoPaging.action")
-		@ResponseBody
-		public PageInfo queryOrderInfoPaging(@RequestParam(value = "currentPage") int currentPage, @RequestParam(value = "companyName") String companyName)
-		{
-			// 分页工具分页
-			Page<Object> page = PageHelper.startPage(currentPage, 5);
-			// 查询角色数据
-			Company company = new Company();
-			if (companyName != null && !companyName.equals(""))
-			{
-				company.setCompanyName(companyName);
-			}
-			List<Company> companyList = companyService.queryOrderInfo(company);
-			currentPage = page.getPageNum();// 当前页数
-			int totalPage = page.getPages();// 获得总页数
-			int totalNum = (int) page.getTotal();// 总记录数
-			// 如果什么都没有查到，当前页变为0
-			if (totalNum == 0)
-			{
-				currentPage = 0;
-			}
-			Map<String, Object> data = new HashMap<String, Object>();// 查询结果数据
-			data.put("companyList", companyList);
-			PageInfo pageInfo = new PageInfo(currentPage, totalPage, totalNum, data);
-			return pageInfo;
-		}
-		// 团检单位对账时跳转到公司套餐项目信息界面
-		@RequestMapping(value = "/queryCheckPro.action")
-		public ModelAndView queryCheckPro(@RequestParam(value = "comboId") int comboId, HttpServletRequest req)
-		{
-			ModelAndView mav = new ModelAndView();
-			List<ProjectCombo> projectComboList = comboService.queryCheckPro(comboId);
-			req.setAttribute("projectComboList", projectComboList);
-			mav.setViewName("/back/combo_info");
-			return mav;
-		}
+		Map<String, Object> data = new HashMap<String, Object>();// 查询结果数据
 
-		// 团检单位对账时跳转到公司个人信息界面
-		@RequestMapping(value = "/queryExamineInfo.action")
-		public ModelAndView queryExamineInfo(@RequestParam(value = "companyId") int companyId, HttpServletRequest req)
-		{
-			ModelAndView mav = new ModelAndView();
-			List<Examine> peopleList = examineService.queryExamineInfo(companyId);
-			req.setAttribute("peopleList", peopleList);
-			mav.setViewName("/back/people_info");
-			return mav;
+		data.put("companyList", companyList);
+
+		PageInfo pageInfo = new PageInfo(currentPage, totalPage, totalNum, data);
+
+		req.setAttribute("pageInfo", pageInfo);
+		mav.setViewName("/back/order_info");
+		return mav;
+	}
+
+	// 分页查询团体订单信息
+	@RequestMapping(value = "/queryOrderInfoPaging.action")
+	@ResponseBody
+	public PageInfo queryOrderInfoPaging(@RequestParam(value = "currentPage") int currentPage,
+			@RequestParam(value = "companyName") String companyName) {
+		// 分页工具分页
+		Page<Object> page = PageHelper.startPage(currentPage, 5);
+		// 查询角色数据
+		Company company = new Company();
+		if (companyName != null && !companyName.equals("")) {
+			company.setCompanyName(companyName);
 		}
+		List<Company> companyList = companyService.queryOrderInfo(company);
+		currentPage = page.getPageNum();// 当前页数
+		int totalPage = page.getPages();// 获得总页数
+		int totalNum = (int) page.getTotal();// 总记录数
+		// 如果什么都没有查到，当前页变为0
+		if (totalNum == 0) {
+			currentPage = 0;
+		}
+		Map<String, Object> data = new HashMap<String, Object>();// 查询结果数据
+		data.put("companyList", companyList);
+		PageInfo pageInfo = new PageInfo(currentPage, totalPage, totalNum, data);
+		return pageInfo;
+	}
+
+	// 团检单位对账时跳转到公司套餐项目信息界面
+	@RequestMapping(value = "/queryCheckPro.action")
+	public ModelAndView queryCheckPro(@RequestParam(value = "comboId") int comboId, HttpServletRequest req) {
+		ModelAndView mav = new ModelAndView();
+		List<ProjectCombo> projectComboList = comboService.queryCheckPro(comboId);
+		req.setAttribute("projectComboList", projectComboList);
+		mav.setViewName("/back/combo_info");
+		return mav;
+	}
+
+	// 团检单位对账时跳转到公司个人信息界面
+	@RequestMapping(value = "/queryExamineInfo.action")
+	public ModelAndView queryExamineInfo(@RequestParam(value = "companyId") int companyId, HttpServletRequest req) {
+		ModelAndView mav = new ModelAndView();
+		List<Examine> peopleList = examineService.queryExamineInfo(companyId);
+		req.setAttribute("peopleList", peopleList);
+		mav.setViewName("/back/people_info");
+		return mav;
+	}
 }

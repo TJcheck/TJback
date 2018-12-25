@@ -9,7 +9,7 @@
 	<insert id="addCombo" parameterType="great.bean.Combo">
 		insert into tbCombo(comboId,companyId,comboCost,comboName) values(#{comboId},#{companyId},#{comboCost},#{comboName})
 	</insert>
-	<!-- 查找项目-->
+	<!-- 查找套餐-->
 	<select id="queryCombo" parameterType="great.bean.Combo" resultType="great.bean.Combo">
 		select comboId,c.companyId,companyName,comboCost,comboName from tbCombo c,tbCompany p
        where c.companyId=p.companyId
