@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="great.mapper.ProResultMapper">
+	<insert id="addProResult" parameterType="great.bean.ProResult">
+		insert into tbProResult(proProResultId,examineId,projectId) values(SEQ_tbProResult.nextval,#{examineId},#{projectId})
+	</insert>
+	<select id="queryProResult" parameterType="great.bean.ProResult" resultType="great.bean.ProResult">
+		select pr.proProResultId,pr.examineId,pr.projectId,pj.projectName,pr.ProResultStatus,p.parameterName,pr.adminId,pr.Summary from tbProResult pr,tbProject pj,tbParameter p where pr.ProResultStatus=p.parameterId and pj.projectId=pr.projectId and pr.examineId=#{examineId} and pr.projectId=#{projectId}
+	</select>
+</mapper>

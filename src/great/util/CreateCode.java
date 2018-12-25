@@ -1,4 +1,4 @@
-package great.utill;
+package great.util;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 
 import javax.imageio.ImageIO;
+
+import org.springframework.stereotype.Component;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
@@ -17,7 +19,7 @@ import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
-
+@Component
 public class CreateCode {
 	/**
 	 * 条形码编码
@@ -34,7 +36,7 @@ public class CreateCode {
 		int codeHeight = Math.max(25, height);
 		try {
 			// 使用EAN_13编码格式进行编码
-			BitMatrix bitMatrix = new MultiFormatWriter().encode(contents, BarcodeFormat.EAN_13, codeWidth, codeHeight,
+			BitMatrix bitMatrix = new MultiFormatWriter().encode(contents, BarcodeFormat.CODE_128, codeWidth, codeHeight,
 					null);
 			// 生成png格式的图片保存到imgPath路径
 			MatrixToImageWriter.writeToStream(bitMatrix, "png", new FileOutputStream(imgPath));

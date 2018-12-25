@@ -50,4 +50,5 @@
 	<delete id="delProItems" parameterType="int">
 	delete from tbProjectItem where projectId=#{projectId}
 	</delete>
+	
 	</mapper>

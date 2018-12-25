@@ -50,4 +50,8 @@
 	<delete id="delProCombo" parameterType="int">
 	delete from tbProjectCombo where comboId = #{comboId}
 	</delete>
+	<!-- 查询套餐项目中间表获得项目名和科室 -->
+	<select id="queryCheckPro" parameterType="int" resultType="great.bean.ProjectCombo">
+	select pc.comboId,pc.projectId,p.projectName,p.deptId,d.deptName from tbProjectCombo pc,tbProject p,tbDept d where pc.comboId = #{comboId} and pc.projectId=p.projectId and d.deptId=p.deptId
+	</select>
 	</mapper>

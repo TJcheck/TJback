@@ -30,4 +30,7 @@ public interface ComboMapper {
 	
 	//删除套餐项目中间表
 	public int delProCombo(int comboId);
+	
+	//查询套餐中间表
+	public List<ProjectCombo> queryCheckPro(int comboId);
 }

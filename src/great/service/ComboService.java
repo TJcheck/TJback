@@ -63,4 +63,8 @@ public class ComboService {
 	public List<ProjectCombo> queryProjects(ProjectCombo projectCombo){
 		return comboMapper.queryProjects(projectCombo);
 	}
+	
+	public List<ProjectCombo> queryCheckPro(int comboId){
+		return comboMapper.queryCheckPro(comboId);
+	}
 }
