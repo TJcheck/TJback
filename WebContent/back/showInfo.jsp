@@ -73,8 +73,6 @@ body {
 						<td>
 							<button type="button" class="btn btn-primary"
 								onclick="showProject(${requestScope.examine.examineId},${requestScope.examine.comboId})">显示体检项目</button>
-							<button type="button" class="btn btn-primary"
-								onclick="updateItem(${item.itemId})"></button>
 						</td>
 					</tr>
 				</c:when>

@@ -39,11 +39,12 @@
 	</insert>
 	<!-- 查询项中间表 -->
 	<select id="queryItems" parameterType="great.bean.ProjectItem" resultType="great.bean.ProjectItem">
-	select projectId,itemId from tbProjectItem
+	select p.projectId,p.itemId,i.itemName,i.itemUnit,i.itemLess,i.itemHigh from tbProjectItem p,tbItem i
 	<where>
+		p.itemId=i.itemId
 	  <if test="projectId !=0">
-			 projectId = #{projectId}
-	</if>
+			and p.projectId = #{projectId}
+	  </if>
 	</where>
 	</select>
 	<!-- 删除项目细项中间表 -->

@@ -5,10 +5,10 @@ public class ProResult {
 	private int examineId;//体检ID
 	private int projectId;//项目ID
 	private String projectName;//项目名
-	private int ProResultStatus;//接收状态
+	private int proResultStatus;//接收状态
 	private String parameterName;//状态名
 	private int adminId;//医生ID
-	private String Summary;//小结
+	private String summary;//小结
 	
 	public ProResult() {
 		super();
@@ -28,11 +28,12 @@ public class ProResult {
 		this.examineId = examineId;
 		this.projectId = projectId;
 		this.projectName = projectName;
-		ProResultStatus = proResultStatus;
+		this.proResultStatus = proResultStatus;
 		this.parameterName = parameterName;
 		this.adminId = adminId;
-		Summary = summary;
+		this.summary = summary;
 	}
+
 
 	public int getProProResultId() {
 		return proProResultId;
@@ -67,11 +68,11 @@ public class ProResult {
 	}
 
 	public int getProResultStatus() {
-		return ProResultStatus;
+		return proResultStatus;
 	}
 
 	public void setProResultStatus(int proResultStatus) {
-		ProResultStatus = proResultStatus;
+		this.proResultStatus = proResultStatus;
 	}
 
 	public String getParameterName() {
@@ -91,19 +92,20 @@ public class ProResult {
 	}
 
 	public String getSummary() {
-		return Summary;
+		return summary;
 	}
 
 	public void setSummary(String summary) {
-		Summary = summary;
+		this.summary = summary;
 	}
 
 	@Override
 	public String toString() {
 		return "ProResult [proProResultId=" + proProResultId + ", examineId=" + examineId + ", projectId=" + projectId
-				+ ", projectName=" + projectName + ", ProResultStatus=" + ProResultStatus + ", parameterName="
-				+ parameterName + ", adminId=" + adminId + ", Summary=" + Summary + "]";
+				+ ", projectName=" + projectName + ", ProResultStatus=" + proResultStatus + ", parameterName="
+				+ parameterName + ", adminId=" + adminId + ", Summary=" + summary + "]";
 	}
+
 	
 	
 }

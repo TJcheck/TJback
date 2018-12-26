@@ -13,5 +13,6 @@
 /applicationContext-mybatis.xml
 /applicationContext-tx.xml
 /great/
-/mybatis-config.xml
-/springmvc.xml
+/ItemResult.xml
+/ItemResultMapper.xml
+/ProResultMapper.xml

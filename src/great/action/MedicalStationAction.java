@@ -198,7 +198,7 @@ public class MedicalStationAction {
 	public String okAppointment(int chargeId, String examineTime) {
 		Charge charge = new Charge();
 		charge.setChargeId(chargeId);// 填入记账ID
-		charge.setReservationStatus(3);// 将状态更改为已确认状态
+		charge.setReservationStatus(14);// 将状态更改为已确认状态
 		charge.setExamineTime(examineTime);
 		if (chargeService.updateReservation(charge)) {
 			return "success";

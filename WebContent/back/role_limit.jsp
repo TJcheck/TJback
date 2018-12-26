@@ -42,6 +42,10 @@ function updateRoleMenu(){
 	 
 	 var myTree = $.fn.zTree.getZTreeObj("ztree");
 	 var selectVal = myTree.getCheckedNodes(true)
+	 if(selectVal.length==0){
+		 alert("请至少选择一个菜单");
+		 return;
+	 }
 	 var menuIdData = "";
 	 for(var i = 0; i < selectVal.length;i++){
 		 menuIdData += selectVal[i].menuId + ":";

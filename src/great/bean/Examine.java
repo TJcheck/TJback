@@ -12,7 +12,7 @@ public class Examine {
 	private String comboName;//套餐名
 	private String exDate;//体检日期
 	private String cDate;//打印日期
-	private String conclusionl;//医生总觉
+	private String conclusion;//医生总觉
 	private String exSuggest;//建议
 	private String exGuide;//生活保健指导
 	private int adminId;//医生ID
@@ -36,7 +36,7 @@ public class Examine {
 	}
 
 	public Examine(int examineId, int companyId, String companyName, String exName, String exSex, String exAge,
-			String exPhone, int comboId, String comboName, String exDate, String cDate, String conclusionl,
+			String exPhone, int comboId, String comboName, String exDate, String cDate, String conclusion,
 			String exSuggest, String exGuide, int adminId, String conclusionDate, int exStatus, String parameterName) {
 		super();
 		this.examineId = examineId;
@@ -50,7 +50,7 @@ public class Examine {
 		this.comboName = comboName;
 		this.exDate = exDate;
 		this.cDate = cDate;
-		this.conclusionl = conclusionl;
+		this.conclusion = conclusion;
 		this.exSuggest = exSuggest;
 		this.exGuide = exGuide;
 		this.adminId = adminId;
@@ -91,12 +91,12 @@ public class Examine {
 		this.cDate = cDate;
 	}
 
-	public String getConclusionl() {
-		return conclusionl;
+	public String getConclusion() {
+		return conclusion;
 	}
 
-	public void setConclusionl(String conclusionl) {
-		this.conclusionl = conclusionl;
+	public void setConclusion(String conclusion) {
+		this.conclusion = conclusion;
 	}
 
 	public String getExSuggest() {
@@ -197,7 +197,7 @@ public class Examine {
 		return "Examine [examineId=" + examineId + ", companyId=" + companyId + ", companyName=" + companyName
 				+ ", exName=" + exName + ", exSex=" + exSex + ", exAge=" + exAge + ", exPhone=" + exPhone + ", comboId="
 				+ comboId + ", comboName=" + comboName + ", exDate=" + exDate + ", cDate=" + cDate + ", conclusionl="
-				+ conclusionl + ", exSuggest=" + exSuggest + ", exGuide=" + exGuide + ", adminId=" + adminId
+				+ conclusion + ", exSuggest=" + exSuggest + ", exGuide=" + exGuide + ", adminId=" + adminId
 				+ ", conclusionDate=" + conclusionDate + ", exStatus=" + exStatus + ", parameterName=" + parameterName
 				+ "]";
 	}

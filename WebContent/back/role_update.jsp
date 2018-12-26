@@ -46,7 +46,7 @@ body {
 			<tr>
 				<td class="tableleft"></td>
 				<td>
-					<button type="button" class="btn btn-primary" type="button" onclick="updateRole()">提交</button>
+					<button type="submit" class="btn btn-primary" type="button">提交</button>
 					&nbsp;&nbsp;
 					<button type="button" class="btn btn-success" name="backid" onclick="back()">返回列表</button>
 				</td>

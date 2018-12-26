@@ -6,6 +6,7 @@ public class Menu
 	private String menuName;
 	private String menuUrl;
 	private int parentId;
+	private String parentName;
 
 	public Menu()
 	{
@@ -20,6 +21,16 @@ public class Menu
 		this.menuName = menuName;
 		this.menuUrl = menuUrl;
 		this.parentId = parentId;
+	}
+
+	public String getParentName()
+	{
+		return parentName;
+	}
+
+	public void setParentName(String parentName)
+	{
+		this.parentName = parentName;
 	}
 
 	public int getMenuId()

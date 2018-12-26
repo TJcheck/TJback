@@ -9,14 +9,8 @@
 		values(SEQ_TBEXAMINE.nextval,#{companyId},#{comboId},#{exName},#{exSex},#{exAge},#{exPhone},to_date('2018-12-19','YYYY-MM-DD'))
 	</insert>
 	<!-- 查询个人体检 -->
-	<select id="queryExamine" parameterType="int"
-		resultType="great.bean.Examine">
-		select
-		e.examineId,e.companyId,c.companyName,e.comboId,cb.comboName,e.exName,e.exSex,e.exAge,e.exPhone,to_char(e.exDate,'YYYY-MM-DD')
-		exDate,e.conclusion,e.exSuggest,e.exGuide,e.adminId,e.conclusionDate,e.exStatus,p.parameterName
-		from tbExamine e,tbCompany c,tbCombo cb,tbParameter p where
-		e.companyId=c.companyId and e.comboId=cb.comboId and
-		e.exStatus=p.parameterId and e.examineId=#{examineId}
+	<select id="queryExamine" parameterType="int" resultType="great.bean.Examine">
+		select e.examineId,e.companyId,c.companyName,e.comboId,cb.comboName,e.exName,e.exSex,e.exAge,e.exPhone,to_char(e.exDate,'YYYY-MM-DD') exDate,e.conclusion,e.exSuggest,e.exGuide,e.adminId,e.conclusionDate,e.exStatus,p.parameterName from tbExamine e,tbCompany c,tbCombo cb,tbParameter p where e.companyId=c.companyId and e.comboId=cb.comboId and e.exStatus=p.parameterId and e.examineId=#{examineId}
 	</select>
 	<!-- 查询公司对应的个人体检号 -->
 	<select id="queryExamineId" parameterType="int" resultType="int">
@@ -50,4 +44,7 @@
 		</if>
 		order by examineId
 	</select>
+	<update id="updateExamines" parameterType="great.bean.Examine">
+		update tbExamine set conclusion=#{conclusion},exSuggest=#{exSuggest},exGuide=#{exGuide},exStatus=#{exStatus},adminId=#{adminId},conclusionDate=sysdate where examineId=#{examineId}
+	</update>
 </mapper>

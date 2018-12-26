@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="great.mapper.ItemResultMapper">
+	<select id="queryItemResult" parameterType="great.bean.ItemResult"
+		resultType="great.bean.ItemResult">
+		select
+		ir.examineId,ir.projectId,ir.itemId,i.itemName,i.itemUnit,i.itemLess,i.itemHigh,ir.imgAddress from
+		 tbItem i,tbItemResult ir 
+		<where>
+			<if test="examineId!=0">
+				ir.examineId=#{examineId}
+			</if>
+			<if test="projectId!=0">
+				and ir.projectId=#{projectId}
+			</if>
+				and ir.itemId=i.itemId
+		</where>
+	</select>
+	<insert id="addItemResult" parameterType="great.bean.ItemResult">
+		insert into tbItemResult(itemResultId,examineId,projectId,itemId) values(SEQ_tbItemResult.nextval,#{examineId},#{projectId},#{itemId})
+	</insert>
+</mapper>

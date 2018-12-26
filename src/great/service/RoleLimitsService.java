@@ -28,7 +28,6 @@ public class RoleLimitsService
 	public boolean addRoleLimits(Map<String, Object> map)
 	{
 		roleLimitsMapper.delRoleLimitsByRoleId((int) map.get("roleId"));
-		roleLimitsMapper.addRoleLimits(map);
 		return roleLimitsMapper.addRoleLimits(map) > 0;
 	}
 

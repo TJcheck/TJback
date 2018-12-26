@@ -80,68 +80,68 @@ public class AdminAction {
 	@Autowired
 	private ExamineService examineService;
 
-	// 套餐配置
-	// 项目更新
-	@RequestMapping(value = "/updateCombo.action")
-	@ResponseBody
-	public String updateCombo(@RequestBody Combo combo) {
-		if (comboService.updateCombo(combo)) {
+	  
+    //套餐配置
+	//批量删除套餐
+    @RequestMapping(value = "/delCombos.action")
+    @ResponseBody
+	public String delCombos(@RequestParam (value = "delboxs[]") int[]comboIds)
+	{
+		if (comboService.delCombos(comboIds))
+		{
+			return "success";
+		}
+			return "failed";
+	}
+    //套餐更新
+    @RequestMapping(value = "/updateCombo.action")
+    @ResponseBody
+    public String updateCombo(@RequestBody Combo combo) {
+    	if (comboService.updateCombo(combo)) {
 			return "success";
 		}
 		return "failed";
-	}
-
-	// 套餐配置
-	// 批量删除套餐
-	@RequestMapping(value = "/delCombos.action")
-	@ResponseBody
-	public String delCombos(@RequestParam(value = "delboxs[]") int[] comboIds) {
-		if (comboService.delCombos(comboIds)) {
-			return "success";
-		}
-		return "failed";
-	}
-
-	// 查询项目项目树
-	@RequestMapping(value = "/queryProjects.action")
-	@ResponseBody
-	public List<Project> queryProjects(int comboId) {
-		// 查询所有细项
-		List<Project> projects = projectService.queryProject(new Project());
-		List<ProjectCombo> proCombos = null;
-		// 根据Id查询中间表
-		if (comboId != 0) {
-			ProjectCombo proCombo = new ProjectCombo();
-			proCombo.setComboId(comboId);
-			proCombos = comboService.queryProjects(proCombo);
-			// 查询细项中间表
-			if (proCombos.size() != 0) {
-				for (Project project : projects) {
-					project.setChecked(false);
-					for (ProjectCombo proCombo1 : proCombos) {
-						if (proCombo1.getProjectId() == project.getProjectId()) {
-							project.setChecked(true);
-						}
-					}
-				}
-			}
-		}
-
+    }
+    
+    //查询项目项目树
+    @RequestMapping(value = "/queryProjects.action")
+    @ResponseBody
+    public List<Project> queryProjects(int comboId){
+    	//查询所有细项
+    	List<Project> projects = projectService.queryProject(new Project());
+    	List<ProjectCombo> proCombos = null;
+        //根据Id查询中间表
+    	if (comboId !=0) {
+    		ProjectCombo proCombo = new ProjectCombo();
+    		proCombo.setComboId(comboId);
+    		proCombos = comboService.queryProjects(proCombo);
+    		//查询细项中间表
+        	if (proCombos.size()!=0) {
+        		for (Project project : projects) {
+        			project.setChecked(false);
+            		for (ProjectCombo proCombo1 : proCombos) {
+        				if (proCombo1.getProjectId()==project.getProjectId()) {
+        					project.setChecked(true);
+        				}
+        			}
+        		}
+    		}	
+    }
+     	
 		return projects;
-	}
-
-	// 添加项目
+    }
+    
+	//添加项目
 	@ResponseBody
 	@RequestMapping(value = "/addCombo.action")
-	public String addCombo(@RequestBody Combo combo) {
+	public String  addCombo(@RequestBody Combo combo) {
 		boolean flag = comboService.addCombo(combo);
-		// 插入中间表
+		//插入中间表
 		if (flag) {
 			return "success";
 		}
-		return "failed";
+			return "failed";
 	}
-
 	//跳转到更新套餐页面
 	@RequestMapping(value = "/updateComboPage.action")
 	public ModelAndView updateComboPage(int comboId,int currentPage)
@@ -155,29 +155,33 @@ public class AdminAction {
 		mav.setViewName("/back/combo_update");
 		return mav;
 	}
-
-	// 跳转到套餐新增页
+	//跳转到套餐新增页
 	@RequestMapping(value = "/addComboPage.action")
 	public String addComboPage() {
 		return "/back/combo_add";
 	}
 
-	//删除套餐
+    //删除套餐
 	@RequestMapping(value = "/delCombo.action")
 	@ResponseBody
-	public String delCombo(int comboId) {
-		if (comboService.delCombo(comboId)) {
+	public String delCombo(int comboId)
+	{
+		if (comboService.delCombo(comboId))
+		{
 			return "success";
 		}
-		return "failed";
+			return "failed";
 	}
-
+	
 	// 跳转到套餐管理页面
 	@RequestMapping(value = "/comboManagerPage.action")
-	public ModelAndView comboManagerPage() {
+	public ModelAndView comboManagerPage(int currentPage)
+	{
 		ModelAndView mav = new ModelAndView();
 		// 第一次跳转当前页数设置为1
-		int currentPage = 1;
+		if (currentPage==0) {
+			currentPage = 1;
+		}
 		// 分页工具分页
 		Page<Object> page = PageHelper.startPage(currentPage, 5);
 		// 查询项目数据
@@ -187,7 +191,8 @@ public class AdminAction {
 		int totalPage = page.getPages();// 获得总页数
 		int totalNum = (int) page.getTotal();// 总记录数
 		// 如果什么都没有查到，当前页变为0
-		if (totalNum == 0) {
+		if (totalNum == 0)
+		{
 			currentPage = 0;
 		}
 		Map<String, Object> data = new HashMap<String, Object>();// 查询结果数据
@@ -197,16 +202,18 @@ public class AdminAction {
 		mav.setViewName("/back/combo_manage");
 		return mav;
 	}
-
-	// ajax分页查询项目信息
+	
+	// ajax分页查询套餐信息
 	@RequestMapping(value = "/comboListPaging.action")
 	@ResponseBody
-	public PageInfo comboListPaging(int currentPage, String comboName) {
+	public PageInfo comboListPaging(int currentPage,int onePage,String comboName)
+	{
 		// 分页工具分页每页五条
-		Page<Object> page = PageHelper.startPage(currentPage, 5);
+		Page<Object> page = PageHelper.startPage(currentPage, onePage);
 		// 查询角色数据
 		Combo combo = new Combo();
-		if (comboName != null && !comboName.equals("")) {
+		if (comboName != null && !comboName.equals(""))
+		{
 			combo.setComboName(comboName);
 		}
 		List<Combo> comboList = comboService.queryCombo(combo);
@@ -214,7 +221,8 @@ public class AdminAction {
 		int totalPage = page.getPages();// 获得总页数
 		int totalNum = (int) page.getTotal();// 总记录数
 		// 如果什么都没有查到，当前页变为0
-		if (totalNum == 0) {
+		if (totalNum == 0)
+		{
 			currentPage = 0;
 		}
 		Map<String, Object> data = new HashMap<String, Object>();// 查询结果数据
@@ -222,7 +230,7 @@ public class AdminAction {
 		PageInfo pageInfo = new PageInfo(currentPage, totalPage, totalNum, data);
 		return pageInfo;
 	}
-
+	
 	// 项目配置
 	// 项目更新
 	@RequestMapping(value = "/updateProject.action")

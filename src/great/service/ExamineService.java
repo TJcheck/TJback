@@ -8,12 +8,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import great.bean.Charge;
 import great.bean.Examine;
+import great.bean.ItemResult;
 import great.bean.ProResult;
 import great.bean.ProjectCombo;
+import great.bean.ProjectItem;
 import great.mapper.ChargeMapper;
 import great.mapper.ComboMapper;
 import great.mapper.ExamineMapper;
+import great.mapper.ItemResultMapper;
 import great.mapper.ProResultMapper;
+import great.mapper.ProjectMapper;
 
 @Service
 public class ExamineService {
@@ -26,6 +30,10 @@ public class ExamineService {
 	public ComboMapper comboMapper;
 	@Autowired
 	public ProResultMapper proResultMapper;
+	@Autowired
+	public ProjectMapper projectMapper;
+	@Autowired
+	public ItemResultMapper itemResultMapper;
 
 	@Transactional(rollbackFor = Exception.class)
 	public boolean addExamine(List<List<Object>> list, int companyId, int chargeId, int comboId) {
@@ -38,7 +46,7 @@ public class ExamineService {
 		}
 		Charge charge = new Charge();
 		charge.setChargeId(chargeId);// 设置记账ID
-		charge.setReservationStatus(5);// 将状态设置为已导入
+		charge.setReservationStatus(16);// 将状态设置为已导入
 		chargeMapper.updateReservation(charge);
 
 		List<Integer> idList = examineMapper.queryExamineId(companyId);
@@ -49,9 +57,15 @@ public class ExamineService {
 			for (ProjectCombo project : Projectlist) {
 				ProResult proResult = new ProResult(idList.get(i), project.getProjectId());
 				proResultMapper.addProResult(proResult);
+				ProjectItem projectItem=new ProjectItem();
+				projectItem.setProjectId(project.getProjectId());
+				List<ProjectItem> lists=projectMapper.queryItems(projectItem);
+				for(ProjectItem projectItem2:lists) {
+					ItemResult itemResult=new ItemResult(idList.get(i), projectItem2.getProjectId(), projectItem2.getItemId());
+					itemResultMapper.addItemResult(itemResult);
+				}
 			}
 		}
-
 		flag = true;
 		return flag;
 	}
@@ -69,4 +83,9 @@ public class ExamineService {
 	public List<Examine> queryExamineInfo(int companyId) {
 		return examineMapper.queryExamineInfo(companyId);
 	}
+	
+	public boolean updateExamines(Examine examine) {
+		return examineMapper.updateExamines(examine)>0;
+	}
+	
 }
